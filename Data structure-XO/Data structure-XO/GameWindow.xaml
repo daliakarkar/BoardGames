@@ -1,0 +1,11 @@
+﻿<Window x:Class="Data_structure_XO.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GameWindow" Height="300" Width="300">
+    <Grid>
+        <TextBox x:Name="position_textbox" HorizontalAlignment="Left" Height="47" Margin="140,57,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="296"/>
+        <TextBox x:Name="result_textbox" HorizontalAlignment="Left" Height="163" Margin="8,109,0,-2" TextWrapping="Wrap" VerticalAlignment="Top" Width="281"/>
+        <Label x:Name="position_label" Content="enter position" HorizontalAlignment="Left" Margin="140,0,0,0" VerticalAlignment="Top" Width="210"/>
+        <Button x:Name="enter_button" Content="Enter" HorizontalAlignment="Left" Margin="37,57,0,0" VerticalAlignment="Top" Width="75"  />
+    </Grid>
+</Window>
