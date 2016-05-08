@@ -21,8 +21,9 @@ namespace Data_structure_XO
             InitializeComponent();
             if(game == 0)
             strategy = new TicTacToeGuiStrategy(this);
-            else
-            {
+            else if (game == 1)
+                strategy = new ConnectFourStrategy(this);
+            else {
                 return;
             }
             SizeChanged += strategy.OnSizeChanged;

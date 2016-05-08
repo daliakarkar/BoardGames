@@ -53,6 +53,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConnectFourStrategy.cs" />
     <Compile Include="TicTacToeGuiStrategy.cs" />
     <Page Include="GameWindow.xaml">
       <SubType>Designer</SubType>
@@ -121,6 +122,11 @@
     <Resource Include="resources\XO- O Mark.png" />
     <Resource Include="resources\XO-Board.png" />
     <Resource Include="resources\XO-X Mark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\Connect4-Board.png" />
+    <Resource Include="resources\Connect4-RedCircle.png" />
+    <Resource Include="resources\Connect4-Yellow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

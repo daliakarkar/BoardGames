@@ -22,9 +22,9 @@ namespace Data_structure_XO
         protected Canvas GameCanvas;
         private bool LoadGameLater = false;
 
-        public GuiStrategy(GameWindow gameCanvas)
+        public GuiStrategy(GameWindow window)
         {
-            Window = gameCanvas;
+            Window = window;
             GameCanvas = Window.GameCanvas;
             GameCanvas.MouseLeftButtonUp += GameCanvas_OnMouseLeftButtonUp;
             gamesResourceDictionary = new ResourceDictionary
@@ -34,18 +34,15 @@ namespace Data_structure_XO
             };
         }
 
-        public GameWindow Window { get;  }
+        public GameWindow Window { get; }
 
         public abstract int MinWidth { get; }
         public abstract int MinHeight { get; }
         public abstract void InitializeBoard();
         public abstract void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty);
-        public abstract void CheckForWinning(int row, int column);
 
         protected abstract void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e);
 
-
-        public abstract void OnSizeChanged(object sender, SizeChangedEventArgs e);
 
         public void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -57,19 +54,16 @@ namespace Data_structure_XO
 
                 DrawSymbolsFromGameEngine();
             }
-           
-
         }
 
         protected abstract void DrawSymbolsFromGameEngine();
 
-        public  void RestartGame()
+        public void RestartGame()
         {
             gameFinished = false;
             gameEngine.Restart();
             GameCanvas.Children.Clear();
             InitializeBoard();
-
         }
 
         public void SaveGame()
@@ -83,7 +77,7 @@ namespace Data_structure_XO
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog.FileName == "") return;
             // Saves the File via a FileStream created by the OpenFile method.
-            var fs = (FileStream)saveFileDialog.OpenFile();
+            var fs = (FileStream) saveFileDialog.OpenFile();
             gameEngine.SaveGame(fs);
             fs.Close();
         }
@@ -100,13 +94,12 @@ namespace Data_structure_XO
             // Process input if the user clicked OK.
             if (userClickedOk != true) return;
             // Open the selected file to read.
-            var fs = (FileStream)openFileDialog.OpenFile();
+            var fs = (FileStream) openFileDialog.OpenFile();
             LoadGame(fs);
         }
 
         public void LoadGame(FileStream fs)
         {
-
             gameEngine.LoadGame(fs);
             fs.Close();
 
@@ -114,7 +107,7 @@ namespace Data_structure_XO
             {
                 GameCanvas.Children.Clear();
                 InitializeBoard();
-gameBoard.UpdateLayout();
+                gameBoard.UpdateLayout();
                 DrawSymbolsFromGameEngine();
             }
             else
@@ -123,7 +116,49 @@ gameBoard.UpdateLayout();
             }
         }
 
-        
-    }
-    }
+        public void CheckForWinning(int row, int column)
+        {
+            //Check if it was a won
+            if (gameEngine.IsGameWon(row, column))
+            {
+                gameFinished = true;
+                MessageBox.Show("Player " + gameEngine.CurrentPlayer + " Won !", "Result",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (gameEngine.IsGameDraw())
+            {
+                gameFinished = true;
+                MessageBox.Show("Draw !", "Result",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                ChangeTurn();
+            }
+        }
 
+        protected virtual void ChangeTurn()
+        {
+            gameEngine.ChangeTurn();
+        }
+
+        protected double GetSizeRatio()
+        {
+            double ratio;
+            gameBoard.UpdateLayout();
+            ratio = gameBoard.ActualWidth/OriginalBoardWidth;
+            return ratio;
+        }
+
+        protected abstract double OriginalBoardWidth { get; }
+
+        public void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        {
+            //this is a bad solution if used in a heavy duty app
+            GameCanvas.Children.Clear();
+            InitializeBoard();
+            gameBoard.UpdateLayout();
+            DrawSymbolsFromGameEngine();
+        }
+    }
+}

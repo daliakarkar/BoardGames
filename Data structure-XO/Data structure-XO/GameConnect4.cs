@@ -130,13 +130,11 @@ namespace Data_structure_XO
         {
             if (row > 5 || column > 6 || (row != 0 && Game[row - 1, column] == Token.Empty))
             {
-                MessageBox.Show("You must enter  a valid position.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
+         
                 return false;
             }
             if (Game[row, column] == Token.Empty) return true;
-            MessageBox.Show("Please choose an empty slot.", "Error",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+     
             return false;
         }
 

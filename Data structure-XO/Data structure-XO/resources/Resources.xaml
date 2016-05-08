@@ -3,5 +3,8 @@
                     xmlns:local="clr-namespace:Data_structure_XO">
     <BitmapImage x:Key="XO-Board" UriSource="XO-Board.png"></BitmapImage>
     <BitmapImage x:Key="XO-X-Mark" UriSource="XO-X Mark.png"></BitmapImage>
-    <BitmapImage x:Key="XO-O-Mark" UriSource="XO- O Mark.png"></BitmapImage>
+    <BitmapImage x:Key="XO-O-Mark" UriSource="XO- O Mark.png"></BitmapImage>   
+    <BitmapImage x:Key="Connect4-Board" UriSource="Connect4-Board.png"></BitmapImage>
+    <BitmapImage x:Key="Connect4-Red-Circle" UriSource="Connect4-RedCircle.png"></BitmapImage>
+    <BitmapImage x:Key="Connect4-Yellow-Circle" UriSource="Connect4-Yellow.png"></BitmapImage>
 </ResourceDictionary>

@@ -60,26 +60,7 @@ namespace Data_structure_XO
             Canvas.SetLeft(symbol, leftOffset);
         }
 
-        public override void CheckForWinning(int row, int column)
-        {
-            //Check if it was a won
-            if (gameEngine.IsGameWon(row, column))
-            {
-                gameFinished = true;
-                MessageBox.Show("Player " + gameEngine.CurrentPlayer + " Won !", "Result",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else if (gameEngine.IsGameDraw())
-            {
-                gameFinished = true;
-                MessageBox.Show("Draw !", "Result",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                gameEngine.ChangeTurn();
-            }
-        }
+        
 
         protected override void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -113,14 +94,7 @@ namespace Data_structure_XO
 
    
 
-        public override void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
-        {
-            //this is a bad solution if used in a heavy duty app
-            GameCanvas.Children.Clear();
-            InitializeBoard();
-            gameBoard.UpdateLayout();
-            DrawSymbolsFromGameEngine();
-        }
+
 
         protected override void DrawSymbolsFromGameEngine()
         {
@@ -132,6 +106,14 @@ namespace Data_structure_XO
                     if (t != GameEngine.Token.Empty)
                         InsertSymbol(i, j, t);
                 }
+            }
+        }
+
+        protected override double OriginalBoardWidth {
+            get
+            {
+                var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;
+                return srcImage.Width;
             }
         }
     }
