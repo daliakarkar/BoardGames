@@ -29,7 +29,7 @@ namespace Data_structure_XO
             }
         }
 
-        private void startGame_Click(object sender, RoutedEventArgs e)
+        private void StartGame_Click(object sender, RoutedEventArgs e)
         {
             if (ChooseGame.SelectedItem != null && ChooseMode.SelectedItem != null)
             {
@@ -60,6 +60,13 @@ namespace Data_structure_XO
                            MessageBoxButton.OK, MessageBoxImage.Error);
             }
             
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+            Close();
         }
     }
 }

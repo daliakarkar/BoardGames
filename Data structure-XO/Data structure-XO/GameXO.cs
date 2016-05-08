@@ -10,9 +10,7 @@ namespace Data_structure_XO
     {
         public GameXO() 
         {
-            CurrentPlayer = Token.One;
             Game = new Token[3,3];
-            Count = 0;
         }
 
         public override bool IsGameWon(int row, int column)
@@ -44,6 +42,8 @@ namespace Data_structure_XO
         {
             if (!IsValidInsertion(row, column)) return false;
             Game[row, column] = CurrentPlayer;
+            UndoStack.Push(row);
+            UndoStack.Push(column);
             Count++;
             return true;
         }

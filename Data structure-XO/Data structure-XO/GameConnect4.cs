@@ -7,14 +7,13 @@ namespace Data_structure_XO
 {
     public class GameConnect4 : GameEngine
     {
-        private const int MaxCol = 7;
         private const int MaxRow = 6;
+        private const int MaxCol = 7;
+
 
         public GameConnect4() 
         {
-            CurrentPlayer = Token.One;
-            Game = new Token[6,7];
-            Count = 0;
+            Game = new Token[MaxRow,MaxCol];
         }
 
         public override bool IsGameWon(int row, int column) 
@@ -63,6 +62,8 @@ namespace Data_structure_XO
         {
             if (!IsValidInsertion(row, column)) return false;
             Game[row, column] = CurrentPlayer;
+            UndoStack.Push(row);
+            UndoStack.Push(column);
             Count++;
             return true;
         }

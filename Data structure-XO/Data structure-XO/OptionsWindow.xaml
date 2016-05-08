@@ -29,6 +29,7 @@
             <ListBoxItem Content="Low"/>
             <ListBoxItem Content="High"/>
         </ListBox>
-        <Button Name="StartGame" Content="Start Game" Grid.Column="1" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="startGame_Click"/>
+        <Button Content="Back" Grid.Column="0" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="Back_Click"/>
+        <Button Name="StartGame" Content="Start Game" Grid.Column="1" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="StartGame_Click"/>
     </Grid>
 </Window>

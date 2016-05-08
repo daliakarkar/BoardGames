@@ -1,13 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Data_structure_XO
 {
-    public abstract class GameEngine
+    public class GameEngine
     {
+        protected GameEngine()
+        {
+            CurrentPlayer = Token.One;
+            Count = 0;
+            UndoStack = new Stack<int>();
+            RedoStack = new Stack<int>();
+        }
+
         public enum Token { Empty, One, Two}
 
         public Token CurrentPlayer { get; set; }
+        public Stack<int> UndoStack { get; set; }
+        public Stack<int> RedoStack { get; set; }
 
         public virtual bool IsGameWon(int row, int column)
         {
@@ -61,6 +72,26 @@ namespace Data_structure_XO
             }
         }
 
+        public void Undo()
+        {
+            if(UndoStack.Count < 2) throw new InvalidOperationException();
+            var column = UndoStack.Pop();
+            var row = UndoStack.Pop();
+            Game[row, column] = Token.Empty;
+            RedoStack.Push(row);
+            RedoStack.Push(column);
+            Count--;
+
+        }
+
+        public bool Redo()
+        {
+            if (RedoStack.Count < 2) throw new InvalidOperationException();
+            var column = RedoStack.Pop();
+            var row = RedoStack.Pop();
+            return InsertSymbol(row, column);
+        }
+
         protected virtual bool IsValidInsertion(int row, int column)
         {
             throw new NotImplementedException();
@@ -91,5 +122,6 @@ namespace Data_structure_XO
 
         protected Token[,] Game;
         protected int Count;
+
     }
 }

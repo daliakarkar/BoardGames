@@ -58,5 +58,29 @@ namespace Data_structure_XO
             
            
         }
+
+        private void CheckGame(int row, int col)
+        {
+            if (_gameEngine.IsGameWon(row, col))
+            {
+                PositionTextbox.IsEnabled = false;
+                EnterButton.IsEnabled = false;
+                MessageBox.Show("Player " + _gameEngine.CurrentPlayer + " Won !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (_gameEngine.IsGameDraw())
+            {
+                PositionTextbox.IsEnabled = false;
+                EnterButton.IsEnabled = false;
+                MessageBox.Show("Draw !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+                _gameEngine.ChangeTurn();
+            }
+            else
+            {
+                _gameEngine.ChangeTurn();
+                UpdateBoard();
+            }
+        }
     }
 }
