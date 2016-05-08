@@ -6,8 +6,8 @@
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open"/>
-                <MenuItem Header="_Save"/>
+                <MenuItem Header="_Open" Click="OpenGame_Click"/>
+                <MenuItem Header="_Save" Click="SaveGame_Click"/>
             </MenuItem>
             <MenuItem Header="_Undo"/>
             <MenuItem Header="_Redo"/>

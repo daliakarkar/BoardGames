@@ -1,10 +1,15 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Windows;
 
 namespace Data_structure_XO
 {
     public class GameConnect4 : GameEngine
     {
+        private const int MaxCol = 7;
+        private const int MaxRow = 6;
+
         public GameConnect4() 
         {
             CurrentPlayer = Token.One;
@@ -15,8 +20,7 @@ namespace Data_structure_XO
         public override bool IsGameWon(int row, int column) 
         {
             var count = 1;
-            const int maxCol = 7;
-            const int maxRow = 6;
+            
             //check col
             if (row >= 3)
             {
@@ -25,22 +29,22 @@ namespace Data_structure_XO
             }
             //check row
             count = 1;
-            for (var i = column + 1; i < maxCol && Game[row, i] == CurrentPlayer; i++,count++) { }
+            for (var i = column + 1; i < MaxCol && Game[row, i] == CurrentPlayer; i++,count++) { }
             if (column > 0)
                 for (var i = column - 1; i >= 0 && Game[row, i] == CurrentPlayer; i--,count++) { }
             if (count == 4) return true;
             //check diag
             count = 1;
             if(row > 0)
-                for (int i = row - 1, j = column + 1; i >= 0 && j < maxCol 
+                for (int i = row - 1, j = column + 1; i >= 0 && j < MaxCol 
                      && Game[i, j] == CurrentPlayer; i--,j++, count++) { }
             if(column > 0)
-                for (int i = row + 1, j = column - 1; i < maxRow && j >= 0
+                for (int i = row + 1, j = column - 1; i < MaxRow && j >= 0
                      && Game[i, j] == CurrentPlayer; i++, j--, count++) { }
             if (count == 4) return true;
             //check anti diag 
             count = 1;
-            for (int i = row + 1, j = column + 1; i < maxRow && j < maxCol
+            for (int i = row + 1, j = column + 1; i < MaxRow && j < MaxCol
                      && Game[i, j] == CurrentPlayer; i++, j++, count++) { }
             if (row <= 0 || column <= 0) return count == 4;
             {
@@ -75,7 +79,7 @@ namespace Data_structure_XO
                 board += Environment.NewLine;
             }
             board += "###################################" + Environment.NewLine;
-            return board;
+            return board.Replace('E', ' ');
         }
 
         public override void Restart()
@@ -83,6 +87,43 @@ namespace Data_structure_XO
             CurrentPlayer = Token.One;
             Game = new Token[6, 7];
             Count = 0;
+        }
+
+        public override void SaveGame(FileStream fs)
+        {
+            var game = TokenToString(CurrentPlayer);
+            game += Count;
+            for (var i = 0; i < MaxRow; i++)
+            {
+                for (var j = 0; j < MaxCol; j++)
+                {
+                    game += TokenToString(Game[i, j]);
+                }
+            }
+            var uniEncoding = new UnicodeEncoding();
+            fs.Write(uniEncoding.GetBytes(game), 0, uniEncoding.GetByteCount(game));
+        }
+
+        public override void LoadGame(FileStream fs)
+        {
+            using (var streamReader = new StreamReader(fs, Encoding.UTF8))
+            {
+                streamReader.DiscardBufferedData();
+                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
+                if (streamReader.ReadToEnd().Length != 88) throw new FileLoadException();
+                streamReader.DiscardBufferedData();
+                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
+                CurrentPlayer = StringToToken(ReadClean(streamReader));
+                if (!int.TryParse(ReadClean(streamReader), out Count))
+                    throw new ArgumentException();
+                for (var i = 0; i < MaxRow; i++)
+                {
+                    for (var j = 0; j < MaxCol; j++)
+                    {
+                        Game[i, j] = StringToToken(ReadClean(streamReader));
+                    }
+                }
+            }
         }
 
         protected override bool IsValidInsertion(int row, int column) 
@@ -99,7 +140,27 @@ namespace Data_structure_XO
             return false;
         }
 
-        private static string TokenToString(Token token)
+        protected override Token StringToToken(string s)
+        {
+            Token result;
+            switch (s)
+            {
+                case "Y":
+                    result = Token.One;
+                    break;
+                case "R":
+                    result = Token.Two;
+                    break;
+                case "E":
+                    result = Token.Empty;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
+        }
+
+        protected override string TokenToString(Token token)
         {
             string result;
             switch (token)
@@ -111,13 +172,12 @@ namespace Data_structure_XO
                     result = "R";
                     break;
                 case Token.Empty:
-                    result = " ";
+                    result = "E";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             return result;
         }
-
     }
 }
