@@ -55,25 +55,6 @@ namespace Data_structure_XO
             throw new NotImplementedException();
         }
 
-        public void Undo()
-        {
-            if(UndoStack.Count < 2) throw new InvalidOperationException();
-            var column = UndoStack.Pop();
-            var row = UndoStack.Pop();
-            Game[row, column] = Token.Empty;
-            ChangeTurn();
-            RedoStack.Push(row);
-            RedoStack.Push(column);
-        }
-
-        public bool Redo()
-        {
-            if (RedoStack.Count < 2) throw new InvalidOperationException();
-            var column = RedoStack.Pop();
-            var row = RedoStack.Pop();
-            return InsertSymbol(row, column);
-        }
-
         public void ChangeTurn()
         {
             switch (CurrentPlayer)
@@ -89,6 +70,26 @@ namespace Data_structure_XO
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public void Undo()
+        {
+            if(UndoStack.Count < 2) throw new InvalidOperationException();
+            var column = UndoStack.Pop();
+            var row = UndoStack.Pop();
+            Game[row, column] = Token.Empty;
+            RedoStack.Push(row);
+            RedoStack.Push(column);
+            Count--;
+
+        }
+
+        public bool Redo()
+        {
+            if (RedoStack.Count < 2) throw new InvalidOperationException();
+            var column = RedoStack.Pop();
+            var row = RedoStack.Pop();
+            return InsertSymbol(row, column);
         }
 
         protected virtual bool IsValidInsertion(int row, int column)

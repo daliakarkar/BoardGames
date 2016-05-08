@@ -26,9 +26,7 @@ namespace Data_structure_XO
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            PlayerLabel.Content = "Player " + _gameEngine.CurrentPlayer + " turn";
-            BoardLabel.Content = _gameEngine.DisplayBoard();
-
+            UpdateBoard();
         }
 
         public GameWindow(FileStream fs,int type) : this(type)
@@ -45,25 +43,7 @@ namespace Data_structure_XO
             var insert = _gameEngine.InsertSymbol(row,col);
             if (!insert) return;
             BoardLabel.Content = _gameEngine.DisplayBoard();
-            if (_gameEngine.IsGameWon(row, col))
-            {
-                PositionTextbox.IsEnabled = false;
-                EnterButton.IsEnabled = false;
-                MessageBox.Show("Player "+_gameEngine.CurrentPlayer+" Won !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else if (_gameEngine.IsGameDraw())
-            {
-                PositionTextbox.IsEnabled = false;
-                EnterButton.IsEnabled = false;
-                MessageBox.Show("Draw !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                _gameEngine.ChangeTurn();
-                UpdateBoard();
-            }
+            CheckGame(row, col);
         }
 
         private void RestartGame_Click(object sender, RoutedEventArgs e)
@@ -130,7 +110,11 @@ namespace Data_structure_XO
             try
             {
                 _gameEngine.Undo();
+                if(PositionTextbox.IsEnabled)
+                    _gameEngine.ChangeTurn();
                 UpdateBoard();
+                PositionTextbox.IsEnabled = true;
+                EnterButton.IsEnabled = true;
             }
             catch(InvalidOperationException)
             {
@@ -145,7 +129,11 @@ namespace Data_structure_XO
             try
             {
                 _gameEngine.Redo();
-                UpdateBoard();
+                BoardLabel.Content = _gameEngine.DisplayBoard();
+                var col = _gameEngine.UndoStack.Pop();
+                var row = _gameEngine.UndoStack.Peek();
+                _gameEngine.UndoStack.Push(col);
+                CheckGame(row, col);
             }
             catch (InvalidOperationException)
             {
@@ -161,6 +149,30 @@ namespace Data_structure_XO
             BoardLabel.Content = _gameEngine.DisplayBoard();
             UndoItem.IsEnabled = _gameEngine.UndoStack.Count >= 2;
             RedoItem.IsEnabled = _gameEngine.RedoStack.Count >= 2;
+        }
+
+        private void CheckGame(int row, int col)
+        {
+            if (_gameEngine.IsGameWon(row, col))
+            {
+                PositionTextbox.IsEnabled = false;
+                EnterButton.IsEnabled = false;
+                MessageBox.Show("Player " + _gameEngine.CurrentPlayer + " Won !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (_gameEngine.IsGameDraw())
+            {
+                PositionTextbox.IsEnabled = false;
+                EnterButton.IsEnabled = false;
+                MessageBox.Show("Draw !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+                _gameEngine.ChangeTurn();
+            }
+            else
+            {
+                _gameEngine.ChangeTurn();
+                UpdateBoard();
+            }
         }
     }
 }
