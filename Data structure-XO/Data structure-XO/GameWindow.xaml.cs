@@ -11,8 +11,10 @@ namespace Data_structure_XO
     public partial class GameWindow
     {
         private readonly GameEngine _gameEngine;
+        private readonly int _mode;
+        private readonly int _level;
 
-        public GameWindow(int type) // 0 for XO and 1 for Connect4
+        public GameWindow(int type, int mode, int level = -1) // 0 for XO and 1 for Connect4
         {
             InitializeComponent();
             switch (type)
@@ -26,10 +28,12 @@ namespace Data_structure_XO
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            _mode = mode;
+            _level = level;
             UpdateBoard();
         }
 
-        public GameWindow(FileStream fs,int type) : this(type)
+        public GameWindow(FileStream fs,int type, int mode, int level = -1) : this(type, mode, level)
         {
             _gameEngine.LoadGame(fs);
             fs.Close();
@@ -42,8 +46,9 @@ namespace Data_structure_XO
             var col = int.Parse(PositionTextbox.Text[2].ToString());
             var insert = _gameEngine.InsertSymbol(row,col);
             if (!insert) return;
+            _gameEngine.RedoStack.Clear();
             BoardLabel.Content = _gameEngine.DisplayBoard();
-            CheckGame(row, col);
+            CheckGame(row, col, 1);
         }
 
         private void RestartGame_Click(object sender, RoutedEventArgs e)
@@ -107,38 +112,52 @@ namespace Data_structure_XO
 
         private void Undo_Click(object sender, RoutedEventArgs e)
         {
-            try
+            while (true)
             {
-                _gameEngine.Undo();
-                if(PositionTextbox.IsEnabled)
-                    _gameEngine.ChangeTurn();
-                UpdateBoard();
-                PositionTextbox.IsEnabled = true;
-                EnterButton.IsEnabled = true;
+                try
+                {
+                    _gameEngine.Undo();
+                    if (PositionTextbox.IsEnabled)
+                        _gameEngine.ChangeTurn();
+                    UpdateBoard();
+                    PositionTextbox.IsEnabled = true;
+                    EnterButton.IsEnabled = true;
+                }
+                catch (InvalidOperationException)
+                {
+                    MessageBox.Show("Nothing to undo.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                if (_mode == 0 && _gameEngine.CurrentPlayer == GameEngine.Token.Two)
+                {
+                    continue;
+                }
+                break;
             }
-            catch(InvalidOperationException)
-            {
-                MessageBox.Show("Nothing to undo.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
         }
 
         private void Redo_Click(object sender, RoutedEventArgs e)
         {
-            try
+            while (true)
             {
-                _gameEngine.Redo();
-                BoardLabel.Content = _gameEngine.DisplayBoard();
-                var col = _gameEngine.UndoStack.Pop();
-                var row = _gameEngine.UndoStack.Peek();
-                _gameEngine.UndoStack.Push(col);
-                CheckGame(row, col);
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("Nothing to redo.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    _gameEngine.Redo();
+                    BoardLabel.Content = _gameEngine.DisplayBoard();
+                    var col = _gameEngine.UndoStack.Pop();
+                    var row = _gameEngine.UndoStack.Peek();
+                    _gameEngine.UndoStack.Push(col);
+                    CheckGame(row, col, 0);
+                }
+                catch (InvalidOperationException)
+                {
+                    MessageBox.Show("Nothing to redo.", "Error",
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                if (_mode == 0 && _gameEngine.CurrentPlayer == GameEngine.Token.Two)
+                {
+                    continue;
+                }
+                break;
             }
         }
 
@@ -151,27 +170,29 @@ namespace Data_structure_XO
             RedoItem.IsEnabled = _gameEngine.RedoStack.Count >= 2;
         }
 
-        private void CheckGame(int row, int col)
+        private void CheckGame(int row, int col,int from) //from: 0 for Redo and 1 for Enter
         {
-            if (_gameEngine.IsGameWon(row, col))
+            if (_gameEngine.IsGameWon(row, col) || _gameEngine.IsGameDraw())
             {
                 PositionTextbox.IsEnabled = false;
                 EnterButton.IsEnabled = false;
-                MessageBox.Show("Player " + _gameEngine.CurrentPlayer + " Won !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else if (_gameEngine.IsGameDraw())
-            {
-                PositionTextbox.IsEnabled = false;
-                EnterButton.IsEnabled = false;
-                MessageBox.Show("Draw !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-                _gameEngine.ChangeTurn();
             }
             else
             {
                 _gameEngine.ChangeTurn();
                 UpdateBoard();
+                if (from != 1 || _mode != 0) return;
+                var result = _level == 0 ? _gameEngine.PlayLow() : _gameEngine.PlayHigh();
+                if (result)
+                {
+                    PositionTextbox.IsEnabled = false;
+                    EnterButton.IsEnabled = false;
+                }
+                else
+                {
+                    _gameEngine.ChangeTurn();
+                    UpdateBoard();
+                }
             }
         }
     }

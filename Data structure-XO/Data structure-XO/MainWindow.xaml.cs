@@ -40,7 +40,7 @@ namespace Data_structure_XO
                 default:
                     throw new FileLoadException();
             }
-            var gameWindow = new GameWindow(fs, type);
+            var gameWindow = new GameWindow(fs, type, 1);
             gameWindow.Show();
             Close();
         }

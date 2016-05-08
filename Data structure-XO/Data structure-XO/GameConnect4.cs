@@ -19,19 +19,28 @@ namespace Data_structure_XO
         public override bool IsGameWon(int row, int column) 
         {
             var count = 1;
-            
             //check col
             if (row >= 3)
             {
                 for (var i = row - 1;i >= 0 && Game[i, column] == CurrentPlayer; i--,count++) { }
-                if (count == 4) return true;
+                if (count == 4)
+                {
+                    MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
             }
             //check row
             count = 1;
             for (var i = column + 1; i < MaxCol && Game[row, i] == CurrentPlayer; i++,count++) { }
             if (column > 0)
                 for (var i = column - 1; i >= 0 && Game[row, i] == CurrentPlayer; i--,count++) { }
-            if (count == 4) return true;
+            if (count == 4)
+            {
+                MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
             //check diag
             count = 1;
             if(row > 0)
@@ -40,22 +49,42 @@ namespace Data_structure_XO
             if(column > 0)
                 for (int i = row + 1, j = column - 1; i < MaxRow && j >= 0
                      && Game[i, j] == CurrentPlayer; i++, j--, count++) { }
-            if (count == 4) return true;
+            if (count == 4)
+            {
+                MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
             //check anti diag 
             count = 1;
             for (int i = row + 1, j = column + 1; i < MaxRow && j < MaxCol
                      && Game[i, j] == CurrentPlayer; i++, j++, count++) { }
-            if (row <= 0 || column <= 0) return count == 4;
+            if (row == 0 || column == 0)
+            {
+                if (count == 4)
+                {
+                    MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
+            }
+            else
             {
                 for (int i = row - 1, j = column - 1; i >= 0 && j >= 0
                      && Game[i, j] == CurrentPlayer; i--, j--, count++) { }
             }
-            return count == 4;
+            if (count != 4) return false;
+            MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                MessageBoxButton.OK, MessageBoxImage.Information);
+            return true;
         }
 
         public override bool IsGameDraw()
         {
-            return Count == 42;
+            if (Count == MaxRow * MaxCol)
+                MessageBox.Show("Draw !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+            return false;
         }
 
         public override bool InsertSymbol(int row, int column)
@@ -125,6 +154,25 @@ namespace Data_structure_XO
                     }
                 }
             }
+        }
+
+        public override bool PlayLow()
+        {
+            var rnd = new Random();
+            var row = rnd.Next(0, MaxRow);
+            var col = rnd.Next(0, MaxCol);
+            while (Game[row, col] != Token.Empty || (row != 0 && Game[row - 1, col] == Token.Empty))
+            {
+                row = rnd.Next(0, MaxRow);
+                col = rnd.Next(0, MaxCol);
+            }
+            if (!InsertSymbol(row, col)) return false;
+            return IsGameWon(row, col) || IsGameDraw();
+        }
+
+        public override bool PlayHigh()
+        {
+            return false;
         }
 
         protected override bool IsValidInsertion(int row, int column) 

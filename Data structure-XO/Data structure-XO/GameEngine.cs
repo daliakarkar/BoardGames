@@ -55,6 +55,16 @@ namespace Data_structure_XO
             throw new NotImplementedException();
         }
 
+        public virtual bool PlayLow()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual bool PlayHigh()
+        {
+            throw new NotImplementedException();
+        }
+
         public void ChangeTurn()
         {
             switch (CurrentPlayer)

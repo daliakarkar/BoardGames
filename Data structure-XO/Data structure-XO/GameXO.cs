@@ -18,24 +18,45 @@ namespace Data_structure_XO
             int count;
             //check col
             for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++) { }
-            if (count == 3) return true;
+            if (count == 3)
+            {
+                MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
             //check row
             for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++){}
-            if (count == 3) return true;
+            if (count == 3)
+            {
+                MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
             //check diag
             if (row == column)
             {
                 for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++){}
-                if (count == 3) return true;
+                if (count == 3)
+                {
+                    MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
+                    return true;
+                }
             }
             //check anti diag 
             for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++){}
-            return count == 3;
+            if (count != 3) return false;
+            MessageBox.Show("Player " + CurrentPlayer + " Won !", "Result",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+            return true;
         }
 
         public override bool IsGameDraw()
         {
-            return Count == 9;
+            if(Count == 9)
+                MessageBox.Show("Draw !", "Result",
+                           MessageBoxButton.OK, MessageBoxImage.Information);
+            return false;
         }
 
         public override bool InsertSymbol(int row, int column)
@@ -105,6 +126,25 @@ namespace Data_structure_XO
                     }
                 }
             }
+        }
+
+        public override bool PlayLow()
+        {
+            var rnd = new Random();
+            var row = rnd.Next(0, 3);
+            var col = rnd.Next(0, 3);
+            while (Game[row, col] != Token.Empty)
+            {
+                row = rnd.Next(0, 3);
+                col = rnd.Next(0, 3);
+            }
+            if (!InsertSymbol(row, col)) return false;
+            return IsGameWon(row, col) || IsGameDraw();
+        }
+
+        public override bool PlayHigh()
+        {
+            return false;
         }
 
         protected override bool IsValidInsertion(int row, int column) 

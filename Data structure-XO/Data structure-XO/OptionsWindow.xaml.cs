@@ -20,12 +20,14 @@ namespace Data_structure_XO
                 DifficultyLabel.Visibility = Visibility.Hidden;
                 ChooseDifficulty.Visibility = Visibility.Hidden;
                 Grid.SetRow(StartGame, 2);
+                Grid.SetRow(BackButton, 2);
             }
             else
             {
                 DifficultyLabel.Visibility = Visibility.Visible;
                 ChooseDifficulty.Visibility = Visibility.Visible;
                 Grid.SetRow(StartGame, 3);
+                Grid.SetRow(BackButton, 3);
             }
         }
 
@@ -37,7 +39,8 @@ namespace Data_structure_XO
                 {
                     if (ChooseDifficulty.SelectedItem != null)
                     {
-                        var gameWindow = new GameWindow(ChooseGame.SelectedIndex);
+                        var gameWindow = new GameWindow(ChooseGame.SelectedIndex,0,
+                                                        ChooseDifficulty.SelectedIndex);
                         gameWindow.Show();
                         Close();
                     }
@@ -49,7 +52,7 @@ namespace Data_structure_XO
                 }
                 else
                 {
-                    var gameWindow = new GameWindow(ChooseGame.SelectedIndex);
+                    var gameWindow = new GameWindow(ChooseGame.SelectedIndex,1);
                     gameWindow.Show();
                     Close();
                 }
