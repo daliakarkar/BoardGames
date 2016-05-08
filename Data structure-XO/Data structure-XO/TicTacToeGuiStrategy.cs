@@ -15,7 +15,7 @@ namespace Data_structure_XO
             var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;
             Image board = new Image {Source = srcImage};
             GameCanvas.Children.Add(board);
-
+            
             Canvas.SetZIndex(board, BoardZIndex);
             board.Height = GameCanvas.ActualHeight - 20;
             board.Width = board.Height + 20;
@@ -106,15 +106,12 @@ namespace Data_structure_XO
             }
         }
 
-        public TicTacToeGuiStrategy(Canvas gameCanvas) : base(gameCanvas)
+        public TicTacToeGuiStrategy(GameWindow window) : base(window)
         {
             gameEngine = new GameXO();
         }
 
-        public override void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            InitializeBoard();
-        }
+   
 
         public override void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {

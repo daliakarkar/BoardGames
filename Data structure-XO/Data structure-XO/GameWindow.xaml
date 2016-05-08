@@ -13,7 +13,7 @@
             <MenuItem Header="_Restart Game" Click="RestartGame_Click" />
         </Menu>
         
-    <Canvas Name="GameCanvas" MouseLeftButtonUp="GameCanvas_OnMouseLeftButtonUp">
+    <Canvas Name="GameCanvas" >
     </Canvas>
 </DockPanel>
 </Window>

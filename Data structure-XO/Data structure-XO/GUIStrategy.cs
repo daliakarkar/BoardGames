@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace Data_structure_XO
 {
@@ -18,10 +20,12 @@ namespace Data_structure_XO
         protected const int SymbolZIndex = 2;
         protected bool gameFinished = false;
         protected Canvas GameCanvas;
+        private bool LoadGameLater = false;
 
-        public GuiStrategy(Canvas gameCanvas)
+        public GuiStrategy(GameWindow gameCanvas)
         {
-            GameCanvas = gameCanvas;
+            Window = gameCanvas;
+            GameCanvas = Window.GameCanvas;
             GameCanvas.MouseLeftButtonUp += GameCanvas_OnMouseLeftButtonUp;
             gamesResourceDictionary = new ResourceDictionary
             {
@@ -29,6 +33,8 @@ namespace Data_structure_XO
                     UriKind.Relative)
             };
         }
+
+        public GameWindow Window { get;  }
 
         public abstract int MinWidth { get; }
         public abstract int MinHeight { get; }
@@ -41,15 +47,83 @@ namespace Data_structure_XO
 
         public abstract void OnSizeChanged(object sender, SizeChangedEventArgs e);
 
-        public abstract void OnLoaded(object sender, RoutedEventArgs e);
+        public void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            InitializeBoard();
+            if (LoadGameLater)
+            {
+                LoadGameLater = false;
+                gameBoard.UpdateLayout();
+
+                DrawSymbolsFromGameEngine();
+            }
+           
+
+        }
+
         protected abstract void DrawSymbolsFromGameEngine();
 
         public  void RestartGame()
         {
+            gameFinished = false;
             gameEngine.Restart();
             GameCanvas.Children.Clear();
             InitializeBoard();
 
         }
+
+        public void SaveGame()
+        {
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Board Game File|*.bgf",
+                Title = "Save Board Game File"
+            };
+            saveFileDialog.ShowDialog();
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog.FileName == "") return;
+            // Saves the File via a FileStream created by the OpenFile method.
+            var fs = (FileStream)saveFileDialog.OpenFile();
+            gameEngine.SaveGame(fs);
+            fs.Close();
+        }
+
+        public void OpenGame()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Board Game File|*.bgf",
+                Title = "Open Board Game File",
+                Multiselect = false
+            };
+            var userClickedOk = openFileDialog.ShowDialog();
+            // Process input if the user clicked OK.
+            if (userClickedOk != true) return;
+            // Open the selected file to read.
+            var fs = (FileStream)openFileDialog.OpenFile();
+            LoadGame(fs);
+        }
+
+        public void LoadGame(FileStream fs)
+        {
+
+            gameEngine.LoadGame(fs);
+            fs.Close();
+
+            if (Window.IsLoaded)
+            {
+                GameCanvas.Children.Clear();
+                InitializeBoard();
+gameBoard.UpdateLayout();
+                DrawSymbolsFromGameEngine();
+            }
+            else
+            {
+                LoadGameLater = true;
+            }
+        }
+
+        
     }
-}
+    }
+
