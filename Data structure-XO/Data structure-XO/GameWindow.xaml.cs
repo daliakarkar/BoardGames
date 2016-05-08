@@ -31,7 +31,7 @@ namespace Data_structure_XO
                     break;
                 case 1:
                     gameEngine = new GameConnect4();
-
+                    break;
             }
         }
     }

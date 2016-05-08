@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Data_structure_XO
 {
-    public class GameEngine
+    public abstract class GameEngine
     {
-        public enum Token { ONE, TWO, EMPTY }
+        public enum Token { ONE, TWO, EMPTY =0 }
         protected Token[][] game;
         protected Token currentPlayer;
-        protected bool GameWon(int row, int column) { return false; }
-        protected bool IsValidInsertion(int row, int column) { return false; }
-        public void InsertSymbol(int row, int column) { }
-        public string DisplayBoard() { return ""; }
+        protected virtual bool GameWon(int row, int column) { return false; }
+        protected virtual bool IsValidInsertion(int row, int column) { return false; }
+        public virtual void InsertSymbol(int row, int column) { }
+        public virtual string DisplayBoard() { return ""; }
         public void ChangeTurn()
         {
             if (currentPlayer == Token.ONE) { currentPlayer= Token.TWO; }
