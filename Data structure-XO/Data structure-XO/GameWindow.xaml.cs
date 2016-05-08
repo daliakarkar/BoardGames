@@ -19,11 +19,12 @@ namespace Data_structure_XO
         public GameWindow(int game) // 0 for XO and 1 for Connect4
         {
             InitializeComponent();
-            if(game == 0)
-            strategy = new TicTacToeGuiStrategy(this);
+            if (game == 0)
+                strategy = new TicTacToeGuiStrategy(this);
             else if (game == 1)
                 strategy = new ConnectFourStrategy(this);
-            else {
+            else
+            {
                 return;
             }
             SizeChanged += strategy.OnSizeChanged;
@@ -34,10 +35,8 @@ namespace Data_structure_XO
 
         public GameWindow(FileStream fs, int type) : this(type)
         {
-
             strategy.LoadGame(fs);
             fs.Close();
-            
         }
 
         private void RestartGame_Click(object sender, RoutedEventArgs e)
@@ -48,39 +47,28 @@ namespace Data_structure_XO
         private void SaveGame_Click(object sender, RoutedEventArgs e)
         {
             strategy.SaveGame();
-           
         }
 
         private void OpenGame_Click(object sender, RoutedEventArgs e)
         {
             strategy.OpenGame();
-
-            
-           
         }
 
-        private void CheckGame(int row, int col)
+        private void Undo_Click(object sender, RoutedEventArgs e)
         {
-            if (_gameEngine.IsGameWon(row, col))
-            {
-                PositionTextbox.IsEnabled = false;
-                EnterButton.IsEnabled = false;
-                MessageBox.Show("Player " + _gameEngine.CurrentPlayer + " Won !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else if (_gameEngine.IsGameDraw())
-            {
-                PositionTextbox.IsEnabled = false;
-                EnterButton.IsEnabled = false;
-                MessageBox.Show("Draw !", "Result",
-                           MessageBoxButton.OK, MessageBoxImage.Information);
-                _gameEngine.ChangeTurn();
-            }
-            else
-            {
-                _gameEngine.ChangeTurn();
-                UpdateBoard();
-            }
+            strategy.Undo();
+        }
+
+        private void NewGame_Click(object sender, RoutedEventArgs e)
+        {
+            var optionsWindow = new OptionsWindow();
+            optionsWindow.Show();
+            Close();
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            strategy.Redo();
         }
     }
 }

@@ -8,8 +8,8 @@
                 <MenuItem Header="_Open" Click="OpenGame_Click"/>
                 <MenuItem Header="_Save" Click="SaveGame_Click"/>
             </MenuItem>
-            <MenuItem Header="_Undo" Click="Undo_Click" Name="UndoItem" IsEnabled="False"/>
-            <MenuItem Header="_Redo" Click="Redo_Click" Name="RedoItem" IsEnabled="False"/>
+            <MenuItem Header="_Undo" Click="Undo_Click" Name="UndoItem" />
+            <MenuItem Header="_Redo" Click="Redo_Click" Name="RedoItem" />
             <MenuItem Header="_New Game" Click="NewGame_Click" />
             <MenuItem Header="_Restart Game" Click="RestartGame_Click" />
         </Menu>

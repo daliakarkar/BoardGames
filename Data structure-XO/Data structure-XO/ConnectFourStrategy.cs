@@ -95,8 +95,10 @@ namespace Data_structure_XO
             Canvas.SetLeft(Chip, ChipLeftOffset);
         }
 
-        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty)
+        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,bool clearRedoStack = true)
         {
+            base.InsertSymbol(row, column, token, clearRedoStack);
+
             BitmapImage symbolImage;
             if (token == GameEngine.Token.Empty)
                 token = gameEngine.CurrentPlayer;

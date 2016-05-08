@@ -39,7 +39,16 @@ namespace Data_structure_XO
         public abstract int MinWidth { get; }
         public abstract int MinHeight { get; }
         public abstract void InitializeBoard();
-        public abstract void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty);
+
+        public virtual void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
+            bool clearRedoStack = true)
+        {
+            if(clearRedoStack)
+                gameEngine.RedoStack.Clear();
+            if (gameEngine.RedoStack.Count == 0)
+                Window.RedoItem.IsEnabled = false;
+            Window.UndoItem.IsEnabled = true;
+        }
 
         protected abstract void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e);
 
@@ -166,6 +175,36 @@ namespace Data_structure_XO
             InitializeBoard();
             gameBoard.UpdateLayout();
             DrawSymbolsFromGameEngine();
+        }
+
+        public void Undo()
+        {
+
+            if (gameFinished)
+                return;
+            gameEngine.Undo();
+            GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
+            ChangeTurn();
+            //Enable Redo Menu
+            Window.RedoItem.IsEnabled = true;
+
+
+            //Disable  Undo Menu if stack reaches 0
+            if (gameEngine.UndoStack.Count == 0)
+                Window.UndoItem.IsEnabled = false;
+        }
+
+        public void Redo()
+        {
+            if (gameFinished)
+                return;
+            gameEngine.Redo();
+            var column = gameEngine.UndoStack.Pop();
+            var row = gameEngine.UndoStack.Peek();
+
+            gameEngine.UndoStack.Push(column);
+            InsertSymbol(row, column,clearRedoStack:false);
+            ChangeTurn();
         }
     }
 }

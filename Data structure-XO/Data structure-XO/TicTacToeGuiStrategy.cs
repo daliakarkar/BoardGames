@@ -30,8 +30,9 @@ namespace Data_structure_XO
             gameBoard = board;
         }
 
-        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty)
+        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,bool ClearRedoStack = true)
         {
+            base.InsertSymbol(row,column,token,ClearRedoStack);
             BitmapImage symbolImage;
             if (token == GameEngine.Token.Empty)
                 token = gameEngine.CurrentPlayer;
