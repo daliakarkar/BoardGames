@@ -98,21 +98,28 @@ namespace Data_structure_XO
             LoadGame(fs);
         }
 
-        public void LoadGame(FileStream fs)
+        public virtual void LoadGame(FileStream fs)
         {
-            gameEngine.LoadGame(fs);
-            fs.Close();
-
-            if (Window.IsLoaded)
+            try
             {
-                GameCanvas.Children.Clear();
-                InitializeBoard();
-                gameBoard.UpdateLayout();
-                DrawSymbolsFromGameEngine();
+                gameEngine.LoadGame(fs);
+                fs.Close();
+                if (Window.IsLoaded)
+                {
+                    GameCanvas.Children.Clear();
+                    InitializeBoard();
+                    gameBoard.UpdateLayout();
+                    DrawSymbolsFromGameEngine();
+                }
+                else
+                {
+                    LoadGameLater = true;
+                }
             }
-            else
+            catch (Exception)
             {
-                LoadGameLater = true;
+                MessageBox.Show(Window, "You have opened invalid save file", "Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
             }
         }
 
