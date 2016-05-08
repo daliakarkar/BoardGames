@@ -18,19 +18,19 @@ namespace Data_structure_XO
             int count;
             //check col
             for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++) { }
-            if (count == 2) return true;
+            if (count == 3) return true;
             //check row
             for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++){}
-            if (count == 2) return true;
+            if (count == 3) return true;
             //check diag
             if (row == column)
             {
                 for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++){}
-                if (count == 2) return true;
+                if (count == 3) return true;
             }
             //check anti diag 
             for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++){}
-            return count == 2;
+            return count == 3;
         }
 
         public override bool IsGameDraw()
@@ -72,13 +72,11 @@ namespace Data_structure_XO
         {
             if (row > 2 || column > 2)
             {
-                MessageBox.Show("You must enter  a valid position.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
+               
                 return false;
             }
             if (Game[row, column] == Token.Empty) return true;
-            MessageBox.Show("Please choose an empty slot.", "Error",
-                MessageBoxButton.OK, MessageBoxImage.Error);
+           
             return false;
         }
 

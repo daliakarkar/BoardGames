@@ -55,6 +55,11 @@ namespace Data_structure_XO
             throw new NotImplementedException();
         }
 
+        public Token GetTileValue(int row, int column)
+        {
+            return Game[row, column];
+        }
+
         protected Token[,] Game;
         protected int Count;
     }
