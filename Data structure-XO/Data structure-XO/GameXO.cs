@@ -94,6 +94,8 @@ namespace Data_structure_XO
         public override void SaveGame(FileStream fs)
         {
             var game = TokenToString(CurrentPlayer);
+            game += Mode;
+            game += Level;
             game += Count;
             for (var i = 0; i < 3; i++)
             {
@@ -112,11 +114,15 @@ namespace Data_structure_XO
             {
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
-                if (streamReader.ReadToEnd().Length != 22) throw new FileLoadException();
+                if (streamReader.ReadToEnd().Length != 26) throw new FileLoadException();
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
                 CurrentPlayer = StringToToken(ReadClean(streamReader));
-                if(!int.TryParse(ReadClean(streamReader), out Count))
+                if (!int.TryParse(ReadClean(streamReader), out Mode))
+                    throw new ArgumentException();
+                if (!int.TryParse(ReadClean(streamReader), out Level))
+                    throw new ArgumentException();
+                if (!int.TryParse(ReadClean(streamReader), out Count))
                     throw new ArgumentException();
                 for (var i = 0; i < 3; i++)
                 {
@@ -144,7 +150,7 @@ namespace Data_structure_XO
 
         public override bool PlayHigh()
         {
-            return false;
+            return PlayLow();
         }
 
         protected override bool IsValidInsertion(int row, int column) 

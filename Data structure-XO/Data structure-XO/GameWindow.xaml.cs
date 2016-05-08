@@ -14,7 +14,7 @@ namespace Data_structure_XO
         private readonly int _mode;
         private readonly int _level;
 
-        public GameWindow(int type, int mode, int level = -1) // 0 for XO and 1 for Connect4
+        public GameWindow(int type, int mode, int level = 3) // 0 for XO and 1 for Connect4
         {
             InitializeComponent();
             switch (type)
@@ -30,12 +30,22 @@ namespace Data_structure_XO
             }
             _mode = mode;
             _level = level;
+            _gameEngine.Mode = _mode;
+            _gameEngine.Level = level;
             UpdateBoard();
         }
 
-        public GameWindow(FileStream fs,int type, int mode, int level = -1) : this(type, mode, level)
+        public GameWindow(FileStream fs,int type, int mode, int level = 3) : this(type, mode, level)
         {
-            _gameEngine.LoadGame(fs);
+            try
+            {
+                _gameEngine.LoadGame(fs);
+            }
+            catch (FileLoadException)
+            {
+                MessageBox.Show("Could not load file.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             fs.Close();
             UpdateBoard();
         }
@@ -88,19 +98,26 @@ namespace Data_structure_XO
             if (userClickedOk != true) return;
             // Open the selected file to read.
             var fs = (FileStream) openFileDialog.OpenFile();
-            try
+            var token = (char)fs.ReadByte();
+            var mode = fs.ReadByte();
+            var level = fs.ReadByte();
+            int type;
+            switch (token)
             {
-                _gameEngine.LoadGame(fs);
+                case 'X':
+                case 'O':
+                    type = 0;
+                    break;
+                case 'Y':
+                case 'R':
+                    type = 1;
+                    break;
+                default:
+                    throw new FileLoadException();
             }
-            catch (FileLoadException)
-            {
-                MessageBox.Show("Could not load file.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            fs.Close();
-            PositionTextbox.IsEnabled = true;
-            EnterButton.IsEnabled = true;
-            UpdateBoard();
+            var gameWindow = new GameWindow(fs, type, mode, level);
+            gameWindow.Show();
+            Close();
         }
 
         private void NewGame_Click(object sender, RoutedEventArgs e)
