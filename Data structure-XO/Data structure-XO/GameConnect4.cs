@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace Data_structure_XO
 {
@@ -10,148 +7,116 @@ namespace Data_structure_XO
     {
         public GameConnect4() 
         {
-            currentPlayer = Token.ONE;
-            game = new Token[6][];
-            for (int i = 0; i < 6; i++)
-                game[i] = new Token[7];
+            CurrentPlayer = Token.One;
+            Game = new Token[6,7];
+            Count = 0;
         }
-        protected override bool GameWon(int row, int col) 
+
+        public override bool IsGameWon(int row, int column) 
         {
-      
-            int count=0,maxCol=7,maxRow=6;
-
-
-            // Horizontal check
-            for (int i=0;i<maxCol;i++)
+            var count = 1;
+            const int maxCol = 7;
+            const int maxRow = 6;
+            //check col
+            if (row >= 3)
             {
-                if (game[row][i]==currentPlayer)
-                    count++;
-                else
-                    count=0;
-
-                    if (count>=4)
-                          return true;
+                for (var i = row - 1;i >= 0 && Game[i, column] == CurrentPlayer; i--,count++) { }
+                if (count == 4) return true;
             }
-            //Vertical check
-            for (int i=0;i<maxRow;i++)
+            //check row
+            count = 1;
+            for (var i = column + 1; i < maxCol && Game[row, i] == CurrentPlayer; i++,count++) { }
+            if (column > 0)
+                for (var i = column - 1; i >= 0 && Game[row, i] == CurrentPlayer; i--,count++) { }
+            if (count == 4) return true;
+            //check diag
+            count = 1;
+            if(row > 0)
+                for (int i = row - 1, j = column + 1; i >= 0 && j < maxCol 
+                     && Game[i, j] == CurrentPlayer; i--,j++, count++) { }
+            if(column > 0)
+                for (int i = row + 1, j = column - 1; i < maxRow && j >= 0
+                     && Game[i, j] == CurrentPlayer; i++, j--, count++) { }
+            if (count == 4) return true;
+            //check anti diag 
+            count = 1;
+            for (int i = row + 1, j = column + 1; i < maxRow && j < maxCol
+                     && Game[i, j] == CurrentPlayer; i++, j++, count++) { }
+            if (row <= 0 || column <= 0) return count == 4;
             {
-                if (game[i][col]==currentPlayer)
-                    count++;
-                else
-                    count=0;
-
-                if (count>=4)
-                    return true;
-            } 
-           //Diagonal check  
-            int rowStart,colStart;
-            //top left to bottom right
-            for (rowStart = 0; rowStart < maxRow - 4; rowStart++)
-            {
-
-
-                for (row = rowStart, col = 0; row < maxRow && col < maxCol; row++, col++)
-                {
-                    if (game[row][col] == currentPlayer)
-                    {
-                        count++;
-                        if (count >= 4) return true;
-                    }
-                    else
-                    {
-                        count = 0;
-                    }
-                }
+                for (int i = row - 1, j = column - 1; i >= 0 && j >= 0
+                     && Game[i, j] == CurrentPlayer; i--, j--, count++) { }
             }
-
-            
-            for (colStart = 1; colStart < maxCol - 4; rowStart++)
-            {
-                
-                for (row = 0, col = colStart; row < maxRow && col < maxCol ; row++, col++)
-                {
-                    if (game[row][col] == currentPlayer)
-                    {
-                        count++;
-                        if (count >= 4) return true;
-                    }
-                    else
-                    {
-                        count = 0;
-                    }
-                }
-            }
-            //Anti Diagonal check  
-      
-            //top left to bottom right
-            for (rowStart = maxRow-1; rowStart >2; rowStart--)
-            {
-
-
-                for (row = rowStart, col = 0; row > 2 && col < maxCol; row--, col++)
-                {
-                    if (game[row][col] == currentPlayer)
-                    {
-                        count++;
-                        if (count >= 4) return true;
-                    }
-                    else
-                    {
-                        count = 0;
-                    }
-                }
-            }
-
-            //bottom left to top right
-            for (colStart = 1; colStart < maxCol - 4; rowStart--)
-            {
-
-                for (row = rowStart, col = colStart; row >=0 && col < maxCol; row--, col++)
-                {
-                    if (game[row][col] == currentPlayer)
-                    {
-                        count++;
-                        if (count >= 4) return true;
-                    }
-                    else
-                    {
-                        count = 0;
-                    }
-                }
-            }
-            return false;
+            return count == 4;
         }
+
+        public override bool IsGameDraw()
+        {
+            return Count == 42;
+        }
+
+        public override bool InsertSymbol(int row, int column)
+        {
+            if (!IsValidInsertion(row, column)) return false;
+            Game[row, column] = CurrentPlayer;
+            Count++;
+            return true;
+        }
+
+        public override string DisplayBoard()
+        {
+            var board = "###################################" + Environment.NewLine;
+            for (var i = 5; i >= 0; i--)
+            {
+                for (var j = 0; j < 7; j++)
+                {
+                    board += "#  " + TokenToString(Game[i, j]) + "  #";
+                }
+                board += Environment.NewLine;
+            }
+            board += "###################################" + Environment.NewLine;
+            return board;
+        }
+
+        public override void Restart()
+        {
+            CurrentPlayer = Token.One;
+            Game = new Token[6, 7];
+            Count = 0;
+        }
+
         protected override bool IsValidInsertion(int row, int column) 
         {
-            if (row > 5 || column > 6)
+            if (row > 5 || column > 6 || (row != 0 && Game[row - 1, column] == Token.Empty))
             {
-                //Show("You must enter  a valid position");
-                return false;
-
-            }
-
-            if (game[row][column] != Token.EMPTY)
-            {
-                //Show("Please choose an empty slot");
+                MessageBox.Show("You must enter  a valid position.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-
-
-            //check function
-            InsertSymbol(row, column);
-            GameWon(row, column);
-            ChangeTurn();
+            if (Game[row, column] == Token.Empty) return true;
+            MessageBox.Show("Please choose an empty slot.", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
-            
         }
-        public override void InsertSymbol(int row, int column) 
-        {
-            game[row][column] = currentPlayer;
 
-        }
-        public override string DisplayBoard() 
+        private static string TokenToString(Token token)
         {
-            return ""; 
+            string result;
+            switch (token)
+            {
+                case Token.One:
+                    result = "Y";
+                    break;
+                case Token.Two:
+                    result = "R";
+                    break;
+                case Token.Empty:
+                    result = " ";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
         }
 
     }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace Data_structure_XO
 {
@@ -11,93 +8,98 @@ namespace Data_structure_XO
     {
         public GameXO() 
         {
-            currentPlayer = Token.ONE;
-            game = new Token[3][];
-            for (int i = 0; i < 3; i++)
-                game[i] = new Token[3];
+            CurrentPlayer = Token.One;
+            Game = new Token[3,3];
+            Count = 0;
         }
-        protected override bool GameWon(int row,int column) 
+
+        public override bool IsGameWon(int row, int column)
         {
+            int count;
             //check col
-            for (int i = 0; i < 3; i++)
-            {
-                if (game[row][i] != currentPlayer)
-                    break;
-                if (i == 2)
-                {
-                    return true;//win
-                }
-            }
-
+            for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++) { }
+            if (count == 2) return true;
             //check row
-            for (int i = 0; i < 3; i++)
-            {
-                if (game[i][column] != currentPlayer)
-                    break;
-                if (i == 2)
-                {
-                    return true;//win
-                }
-            }
-
+            for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++){}
+            if (count == 2) return true;
             //check diag
             if (row == column)
             {
-                
-                for (int i = 0; i < 3; i++)
-                {
-                    if (game[i][i] != currentPlayer)
-                        break;
-                    if (i == 2)
-                    {
-                        return true;//win
-                    }
-                }
+                for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++){}
+                if (count == 2) return true;
             }
-
             //check anti diag 
-            for (int i = 0; i < 3; i++)
-            {
-                if (game[i][(2) - i] != currentPlayer)
-                    break;
-                if (i == 2)
-                {
-                    return true;//win
-                }
-            }
-            return false;
+            for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++){}
+            return count == 2;
         }
+
+        public override bool IsGameDraw()
+        {
+            return Count == 9;
+        }
+
+        public override bool InsertSymbol(int row, int column)
+        {
+            if (!IsValidInsertion(row, column)) return false;
+            Game[row, column] = CurrentPlayer;
+            Count++;
+            return true;
+        }
+
+        public override string DisplayBoard()
+        {
+            var board = "###############" + Environment.NewLine;
+            for (var i = 0; i < 3; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    board += "#  " + TokenToString(Game[i, j]) + "  #";
+                }
+                board += Environment.NewLine;
+            }
+            board += "###############" + Environment.NewLine;
+            return board;
+        }
+
+        public override void Restart()
+        {
+            CurrentPlayer = Token.One;
+            Game = new Token[3, 3];
+            Count = 0;
+        }
+
         protected override bool IsValidInsertion(int row, int column) 
         {
-            
-            if (row >2|| column>2)
+            if (row > 2 || column > 2)
             {
-                //Show("You must enter  a valid position");
-                return false;
-
-            }
-           
-            if (game[row][column] != Token.EMPTY)
-            {
-                //Show("Please choose an empty slot");
+                MessageBox.Show("You must enter  a valid position.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
-           
-            
-            //check function
-            InsertSymbol(row,column);
-            GameWon(row, column);
-            ChangeTurn();
+            if (Game[row, column] == Token.Empty) return true;
+            MessageBox.Show("Please choose an empty slot.", "Error",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
-        public override void InsertSymbol(int row, int column) 
-        {
-            game[row][column] = currentPlayer;
-        }
-        public override string DisplayBoard() 
-        {
-            return ""; 
-        }
 
+        private static string TokenToString(Token token)
+        {
+            string result;
+            switch (token)
+            {
+                case Token.One:
+                    result = "X";
+                    break;
+                case Token.Two:
+                    result = "O";
+                    break;
+                case Token.Empty:
+                    result = " ";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
+        }
     }
 }
