@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Windows;
 
 namespace Data_structure_XO
@@ -58,7 +60,7 @@ namespace Data_structure_XO
                 board += Environment.NewLine;
             }
             board += "###############" + Environment.NewLine;
-            return board;
+            return board.Replace('E', ' ');
         }
 
         public override void Restart()
@@ -66,6 +68,43 @@ namespace Data_structure_XO
             CurrentPlayer = Token.One;
             Game = new Token[3, 3];
             Count = 0;
+        }
+
+        public override void SaveGame(FileStream fs)
+        {
+            var game = TokenToString(CurrentPlayer);
+            game += Count;
+            for (var i = 0; i < 3; i++)
+            {
+                for (var j = 0; j < 3; j++)
+                {
+                    game += TokenToString(Game[i, j]);
+                }
+            }
+            var uniEncoding = new UnicodeEncoding();
+            fs.Write(uniEncoding.GetBytes(game), 0, uniEncoding.GetByteCount(game));
+        }
+
+        public override void LoadGame(FileStream fs)
+        {
+            using (var streamReader = new StreamReader(fs, Encoding.UTF8))
+            {
+                streamReader.DiscardBufferedData();
+                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
+                if (streamReader.ReadToEnd().Length != 22) throw new FileLoadException();
+                streamReader.DiscardBufferedData();
+                streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
+                CurrentPlayer = StringToToken(ReadClean(streamReader));
+                if(!int.TryParse(ReadClean(streamReader), out Count))
+                    throw new ArgumentException();
+                for (var i = 0; i < 3; i++)
+                {
+                    for (var j = 0; j < 3; j++)
+                    {
+                        Game[i, j] = StringToToken(ReadClean(streamReader));
+                    }
+                }
+            }
         }
 
         protected override bool IsValidInsertion(int row, int column) 
@@ -80,7 +119,27 @@ namespace Data_structure_XO
             return false;
         }
 
-        private static string TokenToString(Token token)
+        protected override Token StringToToken(string s)
+        {
+            Token result;
+            switch (s)
+            {
+                case "X":
+                    result = Token.One;
+                    break;
+                case "O":
+                    result = Token.Two;
+                    break;
+                case "E":
+                    result = Token.Empty;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
+        }
+
+        protected override string TokenToString(Token token)
         {
             string result;
             switch (token)
@@ -92,7 +151,7 @@ namespace Data_structure_XO
                     result = "O";
                     break;
                 case Token.Empty:
-                    result = " ";
+                    result = "E";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -4,7 +4,7 @@
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation = "CenterScreen">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
-        <Button Content="Load game" Click="load_game_Click" Height="45" IsEnabled="False"/>
-        <Button Content="New game"  Click="new_game_Click" Height="45"/>
+        <Button Content="Load Game" Click="load_game_Click" Height="45"/>
+        <Button Content="New Game"  Click="new_game_Click" Height="45"/>
     </StackPanel>
 </Window>

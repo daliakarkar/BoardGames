@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Data_structure_XO
 {
@@ -33,6 +34,16 @@ namespace Data_structure_XO
             throw new NotImplementedException();
         }
 
+        public virtual void SaveGame(FileStream fs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void LoadGame(FileStream fs)
+        {
+            throw new NotImplementedException();
+        }
+
         public void ChangeTurn()
         {
             switch (CurrentPlayer)
@@ -53,6 +64,24 @@ namespace Data_structure_XO
         protected virtual bool IsValidInsertion(int row, int column)
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual Token StringToToken(string s)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual string TokenToString(Token token)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected static string ReadClean(TextReader streamReader)
+        {
+            var read = ((char)streamReader.Read()).ToString();
+            if (read == "\0")
+                read = ((char)streamReader.Read()).ToString();
+            return read;
         }
 
         public Token GetTileValue(int row, int column)
