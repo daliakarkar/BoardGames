@@ -35,8 +35,7 @@ namespace Data_structure_XO
         {
             _gameEngine.LoadGame(fs);
             fs.Close();
-            PlayerLabel.Content = "Player " + _gameEngine.CurrentPlayer + " turn";
-            BoardLabel.Content = _gameEngine.DisplayBoard();
+            UpdateBoard();
         }
 
         private void EnterButton_Click(object sender, RoutedEventArgs e)
@@ -63,7 +62,7 @@ namespace Data_structure_XO
             else
             {
                 _gameEngine.ChangeTurn();
-                PlayerLabel.Content = "Player " + _gameEngine.CurrentPlayer + " turn";
+                UpdateBoard();
             }
         }
 
@@ -72,9 +71,7 @@ namespace Data_structure_XO
             _gameEngine.Restart();
             PositionTextbox.IsEnabled = true;
             EnterButton.IsEnabled = true;
-            PositionTextbox.Clear();
-            PlayerLabel.Content = "Player " + _gameEngine.CurrentPlayer + " turn";
-            BoardLabel.Content = _gameEngine.DisplayBoard();
+            UpdateBoard();
         }
 
         private void SaveGame_Click(object sender, RoutedEventArgs e)
@@ -106,13 +103,64 @@ namespace Data_structure_XO
             if (userClickedOk != true) return;
             // Open the selected file to read.
             var fs = (FileStream) openFileDialog.OpenFile();
-            _gameEngine.LoadGame(fs);
+            try
+            {
+                _gameEngine.LoadGame(fs);
+            }
+            catch (FileLoadException)
+            {
+                MessageBox.Show("Could not load file.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             fs.Close();
             PositionTextbox.IsEnabled = true;
             EnterButton.IsEnabled = true;
+            UpdateBoard();
+        }
+
+        private void NewGame_Click(object sender, RoutedEventArgs e)
+        {
+            var optionsWindow = new OptionsWindow();
+            optionsWindow.Show();
+            Close();
+        }
+
+        private void Undo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _gameEngine.Undo();
+                UpdateBoard();
+            }
+            catch(InvalidOperationException)
+            {
+                MessageBox.Show("Nothing to undo.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+        private void Redo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _gameEngine.Redo();
+                UpdateBoard();
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("Nothing to redo.", "Error",
+                           MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateBoard()
+        {
             PositionTextbox.Clear();
             PlayerLabel.Content = "Player " + _gameEngine.CurrentPlayer + " turn";
             BoardLabel.Content = _gameEngine.DisplayBoard();
+            UndoItem.IsEnabled = _gameEngine.UndoStack.Count >= 2;
+            RedoItem.IsEnabled = _gameEngine.RedoStack.Count >= 2;
         }
     }
 }
