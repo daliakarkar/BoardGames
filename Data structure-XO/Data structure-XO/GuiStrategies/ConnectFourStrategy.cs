@@ -1,5 +1,5 @@
-﻿using System.IO;
-using System.Windows;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -7,20 +7,28 @@ using Data_structure_XO.GameEngines;
 
 namespace Data_structure_XO.GuiStrategies
 {
-    class ConnectFourStrategy : GuiStrategy
+    internal class ConnectFourStrategy : GuiStrategy
     {
-        
-        private Image Chip = new Image();
-        protected override int NumOfRows => 6;
-        protected override int NumOfColumns => 7;
+        private readonly Image Chip = new Image();
 
-        public ConnectFourStrategy(GameWindow window, int mode) : base(window,mode)
+        public ConnectFourStrategy(GameWindow window, int mode) : base(window, mode)
         {
-         
             GameEngine = new GameConnect4();
             UpdateStatusBar();
 
             GameCanvas.MouseMove += GameCanvasOnMouseMove;
+        }
+
+        protected override int NumOfRows => 6;
+        protected override int NumOfColumns => 7;
+
+        protected override double OriginalBoardWidth
+        {
+            get
+            {
+                var originalBoardImg = GamesResourceDictionary["Connect4-Board"] as BitmapImage;
+                return originalBoardImg.Width;
+            }
         }
 
         protected override void ChangeTurn()
@@ -29,9 +37,21 @@ namespace Data_structure_XO.GuiStrategies
             SetChip(GameEngine.CurrentPlayer);
         }
 
+        protected override KeyValuePair<double, double> CalculateSymbolOffset(int row, int column, Image symbol)
+        {
+            var rowSize = GameBoard.ActualHeight/NumOfRows;
+            var columnSize = GameBoard.ActualWidth/NumOfColumns;
+
+            var topOffset = Canvas.GetTop(GameBoard) + (NumOfRows - row - 1)*rowSize + (rowSize - symbol.Height)/2 +
+                            2*GetSizeRatio()*(NumOfRows - row - 1);
+            var leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - symbol.Width)/2 +
+                             2*GetSizeRatio()*column;
+            return new KeyValuePair<double, double>(topOffset, leftOffset);
+        }
+
         private void SetChip(GameEngine.Token t)
         {
-            if (  t == GameEngine.Token.One)
+            if (t == GameEngine.Token.One)
                 Chip.Source = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
             else
                 Chip.Source = GamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
@@ -41,39 +61,37 @@ namespace Data_structure_XO.GuiStrategies
         {
             if (GameFinished)
                 return;
-            Point mousePoistion = e.GetPosition(GameBoard);
+            var mousePoistion = e.GetPosition(GameBoard);
             if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth)
             {
                 //Calculate row & column
-                double columnSize = GameBoard.ActualWidth / NumOfColumns;
-                int column = (int)(mousePoistion.X / (columnSize));
+                var columnSize = GameBoard.ActualWidth/NumOfColumns;
+                var column = (int) (mousePoistion.X/columnSize);
 
-                double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - Chip.Width)/2.0;
-                Canvas.SetLeft(Chip,leftOffset);
-
+                var leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - Chip.Width)/2.0;
+                Canvas.SetLeft(Chip, leftOffset);
             }
         }
-        
+
 
         public override void InitializeBoard()
         {
             var srcImage = GamesResourceDictionary["Connect4-Board"] as BitmapImage;
             var RedChip = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
 
-        
 
-            Image board = new Image {Source = srcImage};
-            board.Height = GameCanvas.ActualHeight - RedChip.Height -10;
+            var board = new Image {Source = srcImage};
+            board.Height = GameCanvas.ActualHeight - RedChip.Height - 10;
             board.Width = (double) NumOfColumns/NumOfRows*board.Height;
 
             GameCanvas.Children.Add(board);
 
-            Canvas.SetZIndex(board, BoardZIndex);
+            Panel.SetZIndex(board, BoardZIndex);
 
-            double topOffset = 5+ RedChip.Height;
+            var topOffset = 5 + RedChip.Height;
             Canvas.SetTop(board, topOffset);
 
-            double leftOffSet = (GameCanvas.ActualWidth - board.Width)/2.0;
+            var leftOffSet = (GameCanvas.ActualWidth - board.Width)/2.0;
             if (leftOffSet < 0)
                 leftOffSet = 0;
             Canvas.SetLeft(board, leftOffSet);
@@ -83,48 +101,26 @@ namespace Data_structure_XO.GuiStrategies
 
 
             Chip.Source = RedChip;
-            
+
             Chip.Width = RedChip.Width*GetSizeRatio();
             Chip.Height = RedChip.Height*GetSizeRatio();
-            GameCanvas.Children.Add(Chip);
-            double ChipLeftOffset = leftOffSet + (board.Width/NumOfColumns - Chip.Width)/2; 
+
+                GameCanvas.Children.Add(Chip);
+            var ChipLeftOffset = leftOffSet + (board.Width/NumOfColumns - Chip.Width)/2;
             Canvas.SetLeft(Chip, ChipLeftOffset);
         }
 
-        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,bool clearRedoStack = true)
+        protected override BitmapImage getPlayerSymbol(GameEngine.Token t)
         {
-            base.InsertSymbol(row, column, token, clearRedoStack);
-
             BitmapImage symbolImage;
-            if (token == GameEngine.Token.Empty)
-                token = GameEngine.CurrentPlayer;
+
             //Selet X or O
-            if (token == GameEngine.Token.One)
+            if (t == GameEngine.Token.One)
                 symbolImage = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
             else
                 symbolImage = GamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
-            Image symbol = new Image()
-            {
-                Source = symbolImage
-            };
-            
-            //Set Size
-            symbol.Width = symbolImage.Width*GetSizeRatio();
-            symbol.Height = symbolImage.Height*GetSizeRatio();
 
-            GameCanvas.Children.Add(symbol);
-            Canvas.SetZIndex(symbol, SymbolZIndex);
-            //Calculate offset
-            double rowSize = GameBoard.ActualHeight/NumOfRows;
-            double columnSize = GameBoard.ActualWidth/NumOfColumns;
-
-            double topOffset = Canvas.GetTop(GameBoard) + (NumOfRows - row - 1)*rowSize + (rowSize - symbol.Height)/2 + 2*GetSizeRatio()*(NumOfRows - row-1 );
-            double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - symbol.Width)/2 +
-                                2*GetSizeRatio()*(column );
-
-            //Move it    
-            Canvas.SetTop(symbol, topOffset);
-            Canvas.SetLeft(symbol, leftOffset);
+            return symbolImage;
         }
 
 
@@ -133,14 +129,14 @@ namespace Data_structure_XO.GuiStrategies
             //If the user can't play,because the game is finished
             if (GameFinished)
                 return;
-            Point mousePoistion = e.GetPosition(GameBoard);
+            var mousePoistion = e.GetPosition(GameBoard);
             if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth
                 && mousePoistion.Y > 0 && mousePoistion.Y < GameBoard.ActualHeight)
             {
                 //Calculate row & column
-                double columnSize = GameBoard.ActualWidth/NumOfColumns;
-                int column = (int) (mousePoistion.X/(columnSize));
-                int row = getEmptyRow(column);
+                var columnSize = GameBoard.ActualWidth/NumOfColumns;
+                var column = (int) (mousePoistion.X/columnSize);
+                var row = getEmptyRow(column);
                 //If there is no empty row just return
                 if (row == -1)
                     return;
@@ -167,7 +163,7 @@ namespace Data_structure_XO.GuiStrategies
 
         private int getEmptyRow(int col)
         {
-            for (int i = 0; i < NumOfRows; i++)
+            for (var i = 0; i < NumOfRows; i++)
             {
                 var tile = GameEngine.GetTileValue(i, col);
                 if (tile == GameEngine.Token.Empty)
@@ -177,24 +173,10 @@ namespace Data_structure_XO.GuiStrategies
         }
 
 
-        
-
         public override void LoadGame(FileStream fs)
         {
-           
-                base.LoadGame(fs);
-                SetChip(GameEngine.CurrentPlayer);
-            
-           
-            
-        }
-
-        protected override double OriginalBoardWidth {
-            get
-            {
-                var originalBoardImg = GamesResourceDictionary["Connect4-Board"] as BitmapImage;
-                return originalBoardImg.Width;
-            }
+            base.LoadGame(fs);
+            SetChip(GameEngine.CurrentPlayer);
         }
     }
 }

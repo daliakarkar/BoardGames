@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Data_structure_XO.GameEngines;
 using Microsoft.Win32;
 
@@ -12,8 +14,6 @@ namespace Data_structure_XO.GuiStrategies
     {
         protected const int BoardZIndex = 1;
         protected const int SymbolZIndex = 2;
-        protected abstract int NumOfRows { get;  }
-        protected abstract int NumOfColumns { get;  }
         protected Image GameBoard;
         protected Canvas GameCanvas;
         protected GameEngine GameEngine;
@@ -34,16 +34,20 @@ namespace Data_structure_XO.GuiStrategies
             Mode = mode;
         }
 
+        protected abstract int NumOfRows { get; }
+        protected abstract int NumOfColumns { get; }
+
 
         protected int Mode { get; set; }
 
         public GameWindow Window { get; }
-        
+
         protected abstract double OriginalBoardWidth { get; }
 
         public abstract void InitializeBoard();
+        protected abstract BitmapImage getPlayerSymbol(GameEngine.Token t);
 
-        public virtual void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
+        public void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
             bool clearRedoStack = true)
         {
             if (clearRedoStack)
@@ -51,6 +55,23 @@ namespace Data_structure_XO.GuiStrategies
 
             Window.UndoItem.IsEnabled = GameEngine.UndoStack.Count >= 2;
             Window.RedoItem.IsEnabled = GameEngine.RedoStack.Count >= 2;
+            if (token == GameEngine.Token.Empty)
+                token = GameEngine.CurrentPlayer;
+            var symbolImage = getPlayerSymbol(token);
+            var symbol = new Image
+            {
+                Source = symbolImage
+            };
+
+            symbol.Width = symbolImage.Width*GetSizeRatio();
+            symbol.Height = symbolImage.Height*GetSizeRatio();
+            GameCanvas.Children.Add(symbol);
+            Panel.SetZIndex(symbol, SymbolZIndex);
+            var offset = CalculateSymbolOffset(row, column, symbol);
+
+            //Move it    
+            Canvas.SetTop(symbol, offset.Key);
+            Canvas.SetLeft(symbol, offset.Value);
         }
 
         protected abstract void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e);
@@ -61,13 +82,13 @@ namespace Data_structure_XO.GuiStrategies
             RedrawGame();
         }
 
-        protected  void DrawSymbolsFromGameEngine()
+        protected void DrawSymbolsFromGameEngine()
         {
-            for (int i = 0; i < NumOfRows; i++)
+            for (var i = 0; i < NumOfRows; i++)
             {
-                for (int j = 0; j < NumOfColumns; j++)
+                for (var j = 0; j < NumOfColumns; j++)
                 {
-                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
+                    var t = GameEngine.GetTileValue(i, j);
                     if (t != GameEngine.Token.Empty)
                         InsertSymbol(i, j, t);
                 }
@@ -145,7 +166,6 @@ namespace Data_structure_XO.GuiStrategies
                 {
                     RedrawGame();
                 }
-               
             }
             catch (Exception)
             {
@@ -216,7 +236,7 @@ namespace Data_structure_XO.GuiStrategies
             if (GameFinished)
                 return;
             var undoCount = Mode == 0 ? 2 : 1;
-            for (int i = 0; i < undoCount; i++)
+            for (var i = 0; i < undoCount; i++)
             {
                 GameEngine.Undo();
                 GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
@@ -239,7 +259,7 @@ namespace Data_structure_XO.GuiStrategies
                 return;
 
             var redoCount = Mode == 0 ? 2 : 1;
-            for (int i = 0; i < redoCount; i++)
+            for (var i = 0; i < redoCount; i++)
             {
                 GameEngine.Redo();
                 var column = GameEngine.UndoStack.Pop();
@@ -250,5 +270,7 @@ namespace Data_structure_XO.GuiStrategies
                 ChangeTurn();
             }
         }
+
+        protected abstract KeyValuePair<double, double> CalculateSymbolOffset(int row, int column, Image symbolImage);
     }
 }
