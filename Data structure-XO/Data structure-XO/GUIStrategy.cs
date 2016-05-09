@@ -52,7 +52,7 @@ namespace Data_structure_XO
                 gameEngine.RedoStack.Clear();
             if (gameEngine.RedoStack.Count == 0)
                 Window.RedoItem.IsEnabled = false;
-            Window.UndoItem.IsEnabled = true;
+            Window.UndoItem.IsEnabled = gameEngine.UndoStack.Count >= 2;
         }
 
         protected abstract void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e);
@@ -147,7 +147,6 @@ namespace Data_structure_XO
                     gameBoard.UpdateLayout();
                     DrawSymbolsFromGameEngine();
                     UpdateStatusBar();
-
 
                 }
                 else
