@@ -12,51 +12,66 @@ namespace Data_structure_XO
         private const int MaxCol = 7;
 
 
-        public GameConnect4() 
+        public GameConnect4()
         {
-            Game = new Token[MaxRow,MaxCol];
+            Game = new Token[MaxRow, MaxCol];
         }
 
-        public override bool IsGameWon(int row, int column) 
+        public override bool IsGameWon(int row, int column)
         {
             var count = 1;
             //check col
             if (row >= 3)
             {
-                for (var i = row - 1;i >= 0 && Game[i, column] == CurrentPlayer; i--,count++) { }
+                for (var i = row - 1; i >= 0 && Game[i, column] == CurrentPlayer; i--,count++)
+                {
+                }
                 if (count == 4)
                 {
-       
                     return true;
                 }
             }
             //check row
             count = 1;
-            for (var i = column + 1; i < MaxCol && Game[row, i] == CurrentPlayer; i++,count++) { }
+            for (var i = column + 1; i < MaxCol && Game[row, i] == CurrentPlayer; i++,count++)
+            {
+            }
             if (column > 0)
-                for (var i = column - 1; i >= 0 && Game[row, i] == CurrentPlayer; i--,count++) { }
+                for (var i = column - 1; i >= 0 && Game[row, i] == CurrentPlayer; i--,count++)
+                {
+                }
             if (count == 4)
             {
-
                 return true;
             }
             //check diag
             count = 1;
-            if(row > 0)
-                for (int i = row - 1, j = column + 1; i >= 0 && j < MaxCol 
-                     && Game[i, j] == CurrentPlayer; i--,j++, count++) { }
-            if(column > 0)
-                for (int i = row + 1, j = column - 1; i < MaxRow && j >= 0
-                     && Game[i, j] == CurrentPlayer; i++, j--, count++) { }
+            if (row > 0)
+                for (int i = row - 1, j = column + 1;
+                    i >= 0 && j < MaxCol
+                    && Game[i, j] == CurrentPlayer;
+                    i--,j++, count++)
+                {
+                }
+            if (column > 0)
+                for (int i = row + 1, j = column - 1;
+                    i < MaxRow && j >= 0
+                    && Game[i, j] == CurrentPlayer;
+                    i++, j--, count++)
+                {
+                }
             if (count == 4)
             {
-               
                 return true;
             }
             //check anti diag 
             count = 1;
-            for (int i = row + 1, j = column + 1; i < MaxRow && j < MaxCol
-                     && Game[i, j] == CurrentPlayer; i++, j++, count++) { }
+            for (int i = row + 1, j = column + 1;
+                i < MaxRow && j < MaxCol
+                && Game[i, j] == CurrentPlayer;
+                i++, j++, count++)
+            {
+            }
             if (row == 0 || column == 0)
             {
                 if (count == 4)
@@ -66,8 +81,12 @@ namespace Data_structure_XO
             }
             else
             {
-                for (int i = row - 1, j = column - 1; i >= 0 && j >= 0
-                     && Game[i, j] == CurrentPlayer; i--, j--, count++) { }
+                for (int i = row - 1, j = column - 1;
+                    i >= 0 && j >= 0
+                    && Game[i, j] == CurrentPlayer;
+                    i--, j--, count++)
+                {
+                }
             }
             if (count != 4) return false;
 
@@ -109,16 +128,18 @@ namespace Data_structure_XO
         public override void Restart()
         {
             base.Restart();
-            
-            Game = new Token[6, 7];
 
+            Game = new Token[6, 7];
         }
 
         public override void SaveGame(FileStream fs)
         {
             var game = TokenToString(CurrentPlayer);
             game += Mode;
-            game += Count;
+            //Make sure that it's alaways two digits inserted as count
+            if (Count > 9)
+                game += Count;
+            else game += "0" + Count;
             for (var i = 0; i < MaxRow; i++)
             {
                 for (var j = 0; j < MaxCol; j++)
@@ -136,13 +157,14 @@ namespace Data_structure_XO
             {
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
-                if (streamReader.ReadToEnd().Length != 90) throw new FileLoadException();
+                if (streamReader.ReadToEnd().Length != 92) throw new FileLoadException();
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
                 CurrentPlayer = StringToToken(ReadClean(streamReader));
                 if (!int.TryParse(ReadClean(streamReader), out Mode))
                     throw new ArgumentException();
-                if (!int.TryParse(ReadClean(streamReader), out Count))
+                var countStr = ReadClean(streamReader) + ReadClean(streamReader);
+                if (!int.TryParse(countStr, out Count))
                     throw new ArgumentException();
                 for (var i = 0; i < MaxRow; i++)
                 {
@@ -170,15 +192,14 @@ namespace Data_structure_XO
         }
 
 
-        protected override bool IsValidInsertion(int row, int column) 
+        protected override bool IsValidInsertion(int row, int column)
         {
             if (row > 5 || column > 6 || (row != 0 && Game[row - 1, column] == Token.Empty))
             {
-         
                 return false;
             }
             if (Game[row, column] == Token.Empty) return true;
-     
+
             return false;
         }
 
