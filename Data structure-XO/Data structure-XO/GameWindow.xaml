@@ -13,7 +13,9 @@
             <MenuItem Header="_New Game" Click="NewGame_Click" />
             <MenuItem Header="_Restart Game" Click="RestartGame_Click" />
         </Menu>
-        
+        <StatusBar  DockPanel.Dock="Bottom" Background="Black">
+            <Label Name="Statusbar"></Label>
+        </StatusBar>
     <Canvas Name="GameCanvas" >
     </Canvas>
 </DockPanel>

@@ -22,6 +22,8 @@ namespace Data_structure_XO
         public ConnectFourStrategy(GameWindow window, int mode) : base(window,mode)
         {
             gameEngine = new GameConnect4();
+            UpdateStatusBar();
+
             GameCanvas.MouseMove += GameCanvasOnMouseMove;
         }
 

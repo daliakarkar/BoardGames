@@ -103,6 +103,7 @@ namespace Data_structure_XO
         public TicTacToeGuiStrategy(GameWindow window, int mode) : base(window, mode)
         {
             gameEngine = new GameXO();
+            UpdateStatusBar();
             gameEngine.Mode = mode;
         }
 

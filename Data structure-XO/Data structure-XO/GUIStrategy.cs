@@ -146,6 +146,9 @@ namespace Data_structure_XO
                     InitializeBoard();
                     gameBoard.UpdateLayout();
                     DrawSymbolsFromGameEngine();
+                    UpdateStatusBar();
+
+
                 }
                 else
                 {
@@ -183,6 +186,15 @@ namespace Data_structure_XO
         protected virtual void ChangeTurn()
         {
             gameEngine.ChangeTurn();
+            UpdateStatusBar();
+        }
+
+        protected void UpdateStatusBar()
+        {
+            if (gameEngine.CurrentPlayer == GameEngine.Token.One)
+                Window.Statusbar.Content = "Turn : Player 1";
+            else if (gameEngine.CurrentPlayer == GameEngine.Token.Two)
+                Window.Statusbar.Content = "Turn : Player 2";
         }
 
         protected double GetSizeRatio()

@@ -1,7 +1,6 @@
 ﻿<Window x:Class="Data_structure_XO.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Board Games"
         Style="{StaticResource {x:Type Window}}" 
         WindowStartupLocation = "CenterScreen">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="500">
