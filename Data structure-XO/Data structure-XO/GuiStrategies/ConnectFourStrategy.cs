@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Data_structure_XO.GameEngines;
 
-namespace Data_structure_XO
+namespace Data_structure_XO.GuiStrategies
 {
     class ConnectFourStrategy : GuiStrategy
     {
-        private const int NumOfRows = 6;
-        private const int NumOfColumns = 7;
+        
         private Image Chip = new Image();
-     
+        protected override int NumOfRows => 6;
+        protected override int NumOfColumns => 7;
 
         public ConnectFourStrategy(GameWindow window, int mode) : base(window,mode)
         {
+         
             GameEngine = new GameConnect4();
             UpdateStatusBar();
 
@@ -57,9 +53,7 @@ namespace Data_structure_XO
 
             }
         }
-
-        public override int MinWidth => 600;
-        public override int MinHeight => 600;
+        
 
         public override void InitializeBoard()
         {
@@ -183,18 +177,7 @@ namespace Data_structure_XO
         }
 
 
-        protected override void DrawSymbolsFromGameEngine()
-        {
-            for (int i = 0; i < NumOfRows; i++)
-            {
-                for (int j = 0; j < NumOfColumns; j++)
-                {
-                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
-                    if (t != GameEngine.Token.Empty)
-                        InsertSymbol(i, j, t);
-                }
-            }
-        }
+        
 
         public override void LoadGame(FileStream fs)
         {

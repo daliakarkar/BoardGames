@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows;
 
-namespace Data_structure_XO
+namespace Data_structure_XO.GameEngines
 {
     public class GameEngine
     {

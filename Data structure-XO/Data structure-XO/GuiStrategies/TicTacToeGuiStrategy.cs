@@ -2,13 +2,15 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Data_structure_XO.GameEngines;
 
-namespace Data_structure_XO
+namespace Data_structure_XO.GuiStrategies
 {
     class TicTacToeGuiStrategy : GuiStrategy
     {
-        public override int MinWidth => 500;
-        public override int MinHeight => 500;
+        protected override int NumOfRows => 3;
+        protected override int NumOfColumns => 3;
+        
 
         public override void InitializeBoard()
         {
@@ -50,8 +52,8 @@ namespace Data_structure_XO
             GameCanvas.Children.Add(symbol);
             Canvas.SetZIndex(symbol, SymbolZIndex);
             //Calculate offset
-            double rowSize = GameBoard.ActualHeight/3.0;
-            double columnSize = GameBoard.ActualWidth/3.0;
+            double rowSize = GameBoard.ActualHeight/NumOfRows;
+            double columnSize = GameBoard.ActualWidth/NumOfColumns;
 
             double topOffset = row*rowSize + (rowSize - symbolImage.Height)/2 + 5*(row + 1);
             double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - symbolImage.Width)/2 +
@@ -108,18 +110,7 @@ namespace Data_structure_XO
         }
 
 
-        protected override void DrawSymbolsFromGameEngine()
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
-                    if (t != GameEngine.Token.Empty)
-                        InsertSymbol(i, j, t);
-                }
-            }
-        }
+      
 
         protected override double OriginalBoardWidth
         {

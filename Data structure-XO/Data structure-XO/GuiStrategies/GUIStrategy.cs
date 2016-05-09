@@ -1,26 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Data_structure_XO.GameEngines;
 using Microsoft.Win32;
 
-namespace Data_structure_XO
+namespace Data_structure_XO.GuiStrategies
 {
     public abstract class GuiStrategy
     {
-        protected ResourceDictionary GamesResourceDictionary;
-        protected GameEngine GameEngine;
-        protected Image GameBoard;
         protected const int BoardZIndex = 1;
         protected const int SymbolZIndex = 2;
-        protected bool GameFinished = false;
+        protected abstract int NumOfRows { get;  }
+        protected abstract int NumOfColumns { get;  }
+        protected Image GameBoard;
         protected Canvas GameCanvas;
-        private bool _loadGameLater = false;
+        protected GameEngine GameEngine;
+        protected bool GameFinished;
+        protected ResourceDictionary GamesResourceDictionary;
 
 
         public GuiStrategy(GameWindow window, int mode)
@@ -40,9 +38,9 @@ namespace Data_structure_XO
         protected int Mode { get; set; }
 
         public GameWindow Window { get; }
+        
+        protected abstract double OriginalBoardWidth { get; }
 
-        public abstract int MinWidth { get; }
-        public abstract int MinHeight { get; }
         public abstract void InitializeBoard();
 
         public virtual void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
@@ -50,7 +48,7 @@ namespace Data_structure_XO
         {
             if (clearRedoStack)
                 GameEngine.RedoStack.Clear();
-     
+
             Window.UndoItem.IsEnabled = GameEngine.UndoStack.Count >= 2;
             Window.RedoItem.IsEnabled = GameEngine.RedoStack.Count >= 2;
         }
@@ -60,17 +58,21 @@ namespace Data_structure_XO
 
         public void OnLoaded(object sender, RoutedEventArgs e)
         {
-            InitializeBoard();
-            if (_loadGameLater)
-            {
-                _loadGameLater = false;
-                GameBoard.UpdateLayout();
-
-                DrawSymbolsFromGameEngine();
-            }
+            RedrawGame();
         }
 
-        protected abstract void DrawSymbolsFromGameEngine();
+        protected  void DrawSymbolsFromGameEngine()
+        {
+            for (int i = 0; i < NumOfRows; i++)
+            {
+                for (int j = 0; j < NumOfColumns; j++)
+                {
+                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
+                    if (t != GameEngine.Token.Empty)
+                        InsertSymbol(i, j, t);
+                }
+            }
+        }
 
         public void RestartGame()
         {
@@ -79,9 +81,8 @@ namespace Data_structure_XO
             Window.UndoItem.IsEnabled = false;
 
             GameEngine.Restart();
-            GameCanvas.Children.Clear();
-            
-            InitializeBoard();
+
+            RedrawGame();
         }
 
         public void SaveGame()
@@ -113,7 +114,7 @@ namespace Data_structure_XO
             if (userClickedOk != true) return;
             // Open the selected file to read.
             var fs = (FileStream) openFileDialog.OpenFile();
-            var token = (char)fs.ReadByte();
+            var token = (char) fs.ReadByte();
             var mode = fs.ReadByte();
             int type;
             switch (token)
@@ -142,17 +143,9 @@ namespace Data_structure_XO
                 fs.Close();
                 if (Window.IsLoaded)
                 {
-                    GameCanvas.Children.Clear();
-                    InitializeBoard();
-                    GameBoard.UpdateLayout();
-                    DrawSymbolsFromGameEngine();
-                    UpdateStatusBar();
-
+                    RedrawGame();
                 }
-                else
-                {
-                    _loadGameLater = true;
-                }
+               
             }
             catch (Exception)
             {
@@ -198,46 +191,39 @@ namespace Data_structure_XO
 
         protected double GetSizeRatio()
         {
-            double ratio;
             GameBoard.UpdateLayout();
-            ratio = GameBoard.ActualWidth/OriginalBoardWidth;
+            var ratio = GameBoard.ActualWidth/OriginalBoardWidth;
             return ratio;
         }
 
-        protected abstract double OriginalBoardWidth { get; }
-
-        private bool LoadGameLater
+        public void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
         {
-            get { return _loadGameLater; }
-            set { _loadGameLater = value; }
+            RedrawGame();
         }
 
-        public void OnSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+        protected void RedrawGame()
         {
             //this is a bad solution if used in a heavy duty app
             GameCanvas.Children.Clear();
             InitializeBoard();
             GameBoard.UpdateLayout();
             DrawSymbolsFromGameEngine();
+            UpdateStatusBar();
         }
 
         public void Undo()
         {
             if (GameFinished)
                 return;
-            if (Mode == 0)
-            {
-                GameEngine.Undo();
-                GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
-                GameEngine.Undo();
-                GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
-            }
-            else
+            var undoCount = Mode == 0 ? 2 : 1;
+            for (int i = 0; i < undoCount; i++)
             {
                 GameEngine.Undo();
                 GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
                 ChangeTurn();
             }
+
+
             //Enable Redo Menu
             Window.RedoItem.IsEnabled = true;
 
@@ -252,8 +238,8 @@ namespace Data_structure_XO
             if (GameFinished)
                 return;
 
-
-            if (Mode == 0)
+            var redoCount = Mode == 0 ? 2 : 1;
+            for (int i = 0; i < redoCount; i++)
             {
                 GameEngine.Redo();
                 var column = GameEngine.UndoStack.Pop();
@@ -262,27 +248,6 @@ namespace Data_structure_XO
                 GameEngine.UndoStack.Push(column);
                 InsertSymbol(row, column, clearRedoStack: false);
                 ChangeTurn();
-
-                GameEngine.Redo();
-
-                 column = GameEngine.UndoStack.Pop();
-                row = GameEngine.UndoStack.Peek();
-
-                GameEngine.UndoStack.Push(column);
-                InsertSymbol(row, column, clearRedoStack: false);
-                ChangeTurn();
-
-            }
-            else
-            {
-                GameEngine.Redo();
-                var column = GameEngine.UndoStack.Pop();
-                var row = GameEngine.UndoStack.Peek();
-
-                GameEngine.UndoStack.Push(column);
-                InsertSymbol(row, column, clearRedoStack: false);
-                ChangeTurn();
-
             }
         }
     }

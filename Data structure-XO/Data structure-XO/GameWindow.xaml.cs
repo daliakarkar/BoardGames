@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Data_structure_XO.GuiStrategies;
 using Microsoft.Win32;
 
 namespace Data_structure_XO
@@ -30,8 +31,7 @@ namespace Data_structure_XO
             }
             SizeChanged += strategy.OnSizeChanged;
             Loaded += strategy.OnLoaded;
-            MinWidth = strategy.MinWidth;
-            MinHeight = strategy.MinHeight;
+            
         }
 
         public GameWindow(FileStream fs, int type,int mode) : this(type,mode)

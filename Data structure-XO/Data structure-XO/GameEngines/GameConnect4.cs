@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Windows;
 
-namespace Data_structure_XO
+namespace Data_structure_XO.GameEngines
 {
-    public class GameConnect4 : GameEngine
+    public class GameConnect4 : GameEngines.GameEngine
     {
         private const int MaxRow = 6;
         private const int MaxCol = 7;
