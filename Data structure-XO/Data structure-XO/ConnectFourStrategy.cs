@@ -21,7 +21,7 @@ namespace Data_structure_XO
 
         public ConnectFourStrategy(GameWindow window, int mode) : base(window,mode)
         {
-            gameEngine = new GameConnect4();
+            GameEngine = new GameConnect4();
             UpdateStatusBar();
 
             GameCanvas.MouseMove += GameCanvasOnMouseMove;
@@ -30,29 +30,29 @@ namespace Data_structure_XO
         protected override void ChangeTurn()
         {
             base.ChangeTurn();
-            SetChip(gameEngine.CurrentPlayer);
+            SetChip(GameEngine.CurrentPlayer);
         }
 
         private void SetChip(GameEngine.Token t)
         {
             if (  t == GameEngine.Token.One)
-                Chip.Source = gamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
+                Chip.Source = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
             else
-                Chip.Source = gamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
+                Chip.Source = GamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
         }
 
         private void GameCanvasOnMouseMove(object sender, MouseEventArgs e)
         {
-            if (gameFinished)
+            if (GameFinished)
                 return;
-            Point mousePoistion = e.GetPosition(gameBoard);
-            if (mousePoistion.X > 0 && mousePoistion.X < gameBoard.ActualWidth)
+            Point mousePoistion = e.GetPosition(GameBoard);
+            if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth)
             {
                 //Calculate row & column
-                double columnSize = gameBoard.ActualWidth / NumOfColumns;
+                double columnSize = GameBoard.ActualWidth / NumOfColumns;
                 int column = (int)(mousePoistion.X / (columnSize));
 
-                double leftOffset = Canvas.GetLeft(gameBoard) + column*columnSize + (columnSize - Chip.Width)/2.0;
+                double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - Chip.Width)/2.0;
                 Canvas.SetLeft(Chip,leftOffset);
 
             }
@@ -63,8 +63,8 @@ namespace Data_structure_XO
 
         public override void InitializeBoard()
         {
-            var srcImage = gamesResourceDictionary["Connect4-Board"] as BitmapImage;
-            var RedChip = gamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
+            var srcImage = GamesResourceDictionary["Connect4-Board"] as BitmapImage;
+            var RedChip = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
 
         
 
@@ -85,7 +85,7 @@ namespace Data_structure_XO
             Canvas.SetLeft(board, leftOffSet);
 
             //Give a global access to the board
-            gameBoard = board;
+            GameBoard = board;
 
 
             Chip.Source = RedChip;
@@ -103,12 +103,12 @@ namespace Data_structure_XO
 
             BitmapImage symbolImage;
             if (token == GameEngine.Token.Empty)
-                token = gameEngine.CurrentPlayer;
+                token = GameEngine.CurrentPlayer;
             //Selet X or O
             if (token == GameEngine.Token.One)
-                symbolImage = gamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
+                symbolImage = GamesResourceDictionary["Connect4-Red-Circle"] as BitmapImage;
             else
-                symbolImage = gamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
+                symbolImage = GamesResourceDictionary["Connect4-Yellow-Circle"] as BitmapImage;
             Image symbol = new Image()
             {
                 Source = symbolImage
@@ -121,11 +121,11 @@ namespace Data_structure_XO
             GameCanvas.Children.Add(symbol);
             Canvas.SetZIndex(symbol, SymbolZIndex);
             //Calculate offset
-            double rowSize = gameBoard.ActualHeight/NumOfRows;
-            double columnSize = gameBoard.ActualWidth/NumOfColumns;
+            double rowSize = GameBoard.ActualHeight/NumOfRows;
+            double columnSize = GameBoard.ActualWidth/NumOfColumns;
 
-            double topOffset = Canvas.GetTop(gameBoard) + (NumOfRows - row - 1)*rowSize + (rowSize - symbol.Height)/2 + 2*GetSizeRatio()*(NumOfRows - row-1 );
-            double leftOffset = Canvas.GetLeft(gameBoard) + column*columnSize + (columnSize - symbol.Width)/2 +
+            double topOffset = Canvas.GetTop(GameBoard) + (NumOfRows - row - 1)*rowSize + (rowSize - symbol.Height)/2 + 2*GetSizeRatio()*(NumOfRows - row-1 );
+            double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - symbol.Width)/2 +
                                 2*GetSizeRatio()*(column );
 
             //Move it    
@@ -137,20 +137,20 @@ namespace Data_structure_XO
         protected override void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //If the user can't play,because the game is finished
-            if (gameFinished)
+            if (GameFinished)
                 return;
-            Point mousePoistion = e.GetPosition(gameBoard);
-            if (mousePoistion.X > 0 && mousePoistion.X < gameBoard.ActualWidth
-                && mousePoistion.Y > 0 && mousePoistion.Y < gameBoard.ActualHeight)
+            Point mousePoistion = e.GetPosition(GameBoard);
+            if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth
+                && mousePoistion.Y > 0 && mousePoistion.Y < GameBoard.ActualHeight)
             {
                 //Calculate row & column
-                double columnSize = gameBoard.ActualWidth/NumOfColumns;
+                double columnSize = GameBoard.ActualWidth/NumOfColumns;
                 int column = (int) (mousePoistion.X/(columnSize));
                 int row = getEmptyRow(column);
                 //If there is no empty row just return
                 if (row == -1)
                     return;
-                var insert = gameEngine.InsertSymbol(row, column);
+                var insert = GameEngine.InsertSymbol(row, column);
                 // If insertion fails don't continue
                 if (!insert) return;
 
@@ -159,9 +159,9 @@ namespace Data_structure_XO
 
 
                 //If you play versus computer it's his time
-                if (Mode == 0 && !gameFinished)
+                if (Mode == 0 && !GameFinished)
                 {
-                    var coordinates = gameEngine.PlayComputer();
+                    var coordinates = GameEngine.PlayComputer();
                     if (coordinates != null)
                     {
                         InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
@@ -175,7 +175,7 @@ namespace Data_structure_XO
         {
             for (int i = 0; i < NumOfRows; i++)
             {
-                var tile = gameEngine.GetTileValue(i, col);
+                var tile = GameEngine.GetTileValue(i, col);
                 if (tile == GameEngine.Token.Empty)
                     return i;
             }
@@ -189,7 +189,7 @@ namespace Data_structure_XO
             {
                 for (int j = 0; j < NumOfColumns; j++)
                 {
-                    GameEngine.Token t = gameEngine.GetTileValue(i, j);
+                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
                     if (t != GameEngine.Token.Empty)
                         InsertSymbol(i, j, t);
                 }
@@ -200,7 +200,7 @@ namespace Data_structure_XO
         {
            
                 base.LoadGame(fs);
-                SetChip(gameEngine.CurrentPlayer);
+                SetChip(GameEngine.CurrentPlayer);
             
            
             
@@ -209,7 +209,7 @@ namespace Data_structure_XO
         protected override double OriginalBoardWidth {
             get
             {
-                var originalBoardImg = gamesResourceDictionary["Connect4-Board"] as BitmapImage;
+                var originalBoardImg = GamesResourceDictionary["Connect4-Board"] as BitmapImage;
                 return originalBoardImg.Width;
             }
         }

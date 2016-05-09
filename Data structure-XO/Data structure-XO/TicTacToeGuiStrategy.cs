@@ -12,7 +12,7 @@ namespace Data_structure_XO
 
         public override void InitializeBoard()
         {
-            var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;
+            var srcImage = GamesResourceDictionary["XO-Board"] as BitmapImage;
             Image board = new Image {Source = srcImage};
             GameCanvas.Children.Add(board);
 
@@ -27,7 +27,7 @@ namespace Data_structure_XO
 
             Canvas.SetTop(board, 10);
             //Give a global access to the board
-            gameBoard = board;
+            GameBoard = board;
         }
 
         public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
@@ -36,12 +36,12 @@ namespace Data_structure_XO
             base.InsertSymbol(row, column, token, ClearRedoStack);
             BitmapImage symbolImage;
             if (token == GameEngine.Token.Empty)
-                token = gameEngine.CurrentPlayer;
+                token = GameEngine.CurrentPlayer;
             //Selet X or O
             if (token == GameEngine.Token.One)
-                symbolImage = gamesResourceDictionary["XO-X-Mark"] as BitmapImage;
+                symbolImage = GamesResourceDictionary["XO-X-Mark"] as BitmapImage;
             else
-                symbolImage = gamesResourceDictionary["XO-O-Mark"] as BitmapImage;
+                symbolImage = GamesResourceDictionary["XO-O-Mark"] as BitmapImage;
             Image symbol = new Image()
             {
                 Source = symbolImage
@@ -50,11 +50,11 @@ namespace Data_structure_XO
             GameCanvas.Children.Add(symbol);
             Canvas.SetZIndex(symbol, SymbolZIndex);
             //Calculate offset
-            double rowSize = gameBoard.ActualHeight/3.0;
-            double columnSize = gameBoard.ActualWidth/3.0;
+            double rowSize = GameBoard.ActualHeight/3.0;
+            double columnSize = GameBoard.ActualWidth/3.0;
 
             double topOffset = row*rowSize + (rowSize - symbolImage.Height)/2 + 5*(row + 1);
-            double leftOffset = Canvas.GetLeft(gameBoard) + column*columnSize + (columnSize - symbolImage.Width)/2 +
+            double leftOffset = Canvas.GetLeft(GameBoard) + column*columnSize + (columnSize - symbolImage.Width)/2 +
                                 5*(column + 1);
 
             //Move it    
@@ -66,20 +66,20 @@ namespace Data_structure_XO
         protected override void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //If the user can't play,because the game is finished
-            if (gameFinished)
+            if (GameFinished)
                 return;
-            Point mousePoistion = e.GetPosition(gameBoard);
-            if (mousePoistion.X > 0 && mousePoistion.X < gameBoard.ActualWidth
-                && mousePoistion.Y > 0 && mousePoistion.Y < gameBoard.ActualHeight)
+            Point mousePoistion = e.GetPosition(GameBoard);
+            if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth
+                && mousePoistion.Y > 0 && mousePoistion.Y < GameBoard.ActualHeight)
             {
                 //Calculate row & column
-                double rowSize = gameBoard.ActualHeight/3.0;
-                double columnSize = gameBoard.ActualWidth/3.0;
+                double rowSize = GameBoard.ActualHeight/3.0;
+                double columnSize = GameBoard.ActualWidth/3.0;
                 int row = (int) (mousePoistion.Y/rowSize);
                 int column = (int) (mousePoistion.X/(columnSize));
 
 
-                var insert = gameEngine.InsertSymbol(row, column);
+                var insert = GameEngine.InsertSymbol(row, column);
                 // If insertion fails don't continue
                 if (!insert) return;
 
@@ -87,9 +87,9 @@ namespace Data_structure_XO
                 CheckForWinning(row, column);
 
                 //If you play versus computer it's his time
-                if (Mode == 0 && !gameFinished)
+                if (Mode == 0 && !GameFinished)
                 {
-                    var coordinates = gameEngine.PlayComputer();
+                    var coordinates = GameEngine.PlayComputer();
                     if (coordinates != null)
                     {
                         InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
@@ -102,9 +102,9 @@ namespace Data_structure_XO
 
         public TicTacToeGuiStrategy(GameWindow window, int mode) : base(window, mode)
         {
-            gameEngine = new GameXO();
+            GameEngine = new GameXO();
             UpdateStatusBar();
-            gameEngine.Mode = mode;
+            GameEngine.Mode = mode;
         }
 
 
@@ -114,7 +114,7 @@ namespace Data_structure_XO
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    GameEngine.Token t = gameEngine.GetTileValue(i, j);
+                    GameEngine.Token t = GameEngine.GetTileValue(i, j);
                     if (t != GameEngine.Token.Empty)
                         InsertSymbol(i, j, t);
                 }
@@ -125,7 +125,7 @@ namespace Data_structure_XO
         {
             get
             {
-                var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;
+                var srcImage = GamesResourceDictionary["XO-Board"] as BitmapImage;
                 return srcImage.Width;
             }
         }
