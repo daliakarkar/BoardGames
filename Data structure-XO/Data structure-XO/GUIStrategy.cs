@@ -22,7 +22,8 @@ namespace Data_structure_XO
         protected Canvas GameCanvas;
         private bool LoadGameLater = false;
 
-        public GuiStrategy(GameWindow window)
+
+        public GuiStrategy(GameWindow window, int mode)
         {
             Window = window;
             GameCanvas = Window.GameCanvas;
@@ -32,7 +33,11 @@ namespace Data_structure_XO
                 Source = new Uri("resources/Resources.xaml",
                     UriKind.Relative)
             };
+            Mode = mode;
         }
+
+
+        protected int Mode { get; set; }
 
         public GameWindow Window { get; }
 
@@ -43,7 +48,7 @@ namespace Data_structure_XO
         public virtual void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
             bool clearRedoStack = true)
         {
-            if(clearRedoStack)
+            if (clearRedoStack)
                 gameEngine.RedoStack.Clear();
             if (gameEngine.RedoStack.Count == 0)
                 Window.RedoItem.IsEnabled = false;
@@ -104,7 +109,25 @@ namespace Data_structure_XO
             if (userClickedOk != true) return;
             // Open the selected file to read.
             var fs = (FileStream) openFileDialog.OpenFile();
-            LoadGame(fs);
+            var token = (char)fs.ReadByte();
+            var mode = fs.ReadByte();
+            int type;
+            switch (token)
+            {
+                case 'X':
+                case 'O':
+                    type = 0;
+                    break;
+                case 'Y':
+                case 'R':
+                    type = 1;
+                    break;
+                default:
+                    throw new FileLoadException();
+            }
+            var gameWindow = new GameWindow(fs, type, mode);
+            gameWindow.Show();
+            Window.Close();
         }
 
         public virtual void LoadGame(FileStream fs)
@@ -179,7 +202,6 @@ namespace Data_structure_XO
 
         public void Undo()
         {
-
             if (gameFinished)
                 return;
             gameEngine.Undo();
@@ -203,7 +225,7 @@ namespace Data_structure_XO
             var row = gameEngine.UndoStack.Peek();
 
             gameEngine.UndoStack.Push(column);
-            InsertSymbol(row, column,clearRedoStack:false);
+            InsertSymbol(row, column, clearRedoStack: false);
             ChangeTurn();
         }
     }

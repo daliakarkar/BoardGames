@@ -20,16 +20,12 @@
             <ListBoxItem Content="Connect 4"/>
         </ListBox>
         <Label  Grid.Column="0" Grid.Row="1" Content="Mode"   VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ListBox  Name="ChooseMode" Grid.Column="1" Grid.Row="1"  VerticalAlignment="Center" SelectionChanged="chooseMode_SelectionChanged">
+        <ListBox  Name="ChooseMode" Grid.Column="1" Grid.Row="1"  VerticalAlignment="Center" >
             <ListBoxItem Content="Single Player"/>
             <ListBoxItem Content="Two Players"/>
         </ListBox>
-        <Label Name="DifficultyLabel" Grid.Column="0" Grid.Row="2" Content="Difficulty"  VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden"/>
-        <ListBox Name="ChooseDifficulty" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" Visibility="Hidden">
-            <ListBoxItem Content="Low"/>
-            <ListBoxItem Content="High"/>
-        </ListBox>
-        <Button Content="Back" Grid.Column="0" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="Back_Click"/>
+       
+        <Button Name="BackButton" Content="Back" Grid.Column="0" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="Back_Click"/>
         <Button Name="StartGame" Content="Start Game" Grid.Column="1" Grid.Row="2" Height="45" VerticalAlignment="Center" Click="StartGame_Click"/>
     </Grid>
 </Window>

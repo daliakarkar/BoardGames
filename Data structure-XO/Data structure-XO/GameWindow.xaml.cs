@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,13 +17,13 @@ namespace Data_structure_XO
     {
         private GuiStrategy strategy;
 
-        public GameWindow(int game) // 0 for XO and 1 for Connect4
+        public GameWindow(int type,int mode) // 0 for XO and 1 for Connect4
         {
             InitializeComponent();
-            if (game == 0)
-                strategy = new TicTacToeGuiStrategy(this);
-            else if (game == 1)
-                strategy = new ConnectFourStrategy(this);
+            if (type == 0)
+                strategy = new TicTacToeGuiStrategy(this,mode);
+            else if (type == 1)
+                strategy = new ConnectFourStrategy(this,mode);
             else
             {
                 return;
@@ -33,7 +34,7 @@ namespace Data_structure_XO
             MinHeight = strategy.MinHeight;
         }
 
-        public GameWindow(FileStream fs, int type) : this(type)
+        public GameWindow(FileStream fs, int type,int mode) : this(type,mode)
         {
             strategy.LoadGame(fs);
             fs.Close();

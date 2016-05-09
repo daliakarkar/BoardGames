@@ -17,12 +17,12 @@ namespace Data_structure_XO
         private const int NumOfRows = 6;
         private const int NumOfColumns = 7;
         private Image Chip = new Image();
-        public ConnectFourStrategy(GameWindow Window) : base(Window)
+     
 
+        public ConnectFourStrategy(GameWindow window, int mode) : base(window,mode)
         {
             gameEngine = new GameConnect4();
-            GameCanvas.MouseMove+=GameCanvasOnMouseMove;
-        
+            GameCanvas.MouseMove += GameCanvasOnMouseMove;
         }
 
         protected override void ChangeTurn()
@@ -154,6 +154,18 @@ namespace Data_structure_XO
 
                 InsertSymbol(row, column);
                 CheckForWinning(row, column);
+
+
+                //If you play versus computer it's his time
+                if (Mode == 0 && !gameFinished)
+                {
+                    var coordinates = gameEngine.PlayComputer();
+                    if (coordinates != null)
+                    {
+                        InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
+                        CheckForWinning(coordinates.Value.Key, coordinates.Value.Value);
+                    }
+                }
             }
         }
 

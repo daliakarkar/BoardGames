@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -18,24 +19,39 @@ namespace Data_structure_XO
             int count;
             //check col
             for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++) { }
-            if (count == 3) return true;
+            if (count == 3)
+            {
+               
+                return true;
+            }
             //check row
             for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++){}
-            if (count == 3) return true;
+            if (count == 3)
+            {
+                return true;
+            }
             //check diag
             if (row == column)
             {
                 for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++){}
-                if (count == 3) return true;
+                if (count == 3)
+                {
+                   
+                    return true;
+                }
             }
             //check anti diag 
             for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++){}
-            return count == 3;
+            if (count != 3) return false;
+       
+            return true;
         }
 
         public override bool IsGameDraw()
         {
-            return Count == 9;
+            if (Count == 9)
+                return true;
+            return false;
         }
 
         public override bool InsertSymbol(int row, int column)
@@ -73,6 +89,7 @@ namespace Data_structure_XO
         public override void SaveGame(FileStream fs)
         {
             var game = TokenToString(CurrentPlayer);
+            game += Mode;
             game += Count;
             for (var i = 0; i < 3; i++)
             {
@@ -91,11 +108,14 @@ namespace Data_structure_XO
             {
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
-                if (streamReader.ReadToEnd().Length != 22) throw new FileLoadException();
+                if (streamReader.ReadToEnd().Length != 24) throw new FileLoadException();
                 streamReader.DiscardBufferedData();
                 streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
                 CurrentPlayer = StringToToken(ReadClean(streamReader));
-                if(!int.TryParse(ReadClean(streamReader), out Count))
+                if (!int.TryParse(ReadClean(streamReader), out Mode))
+                    throw new ArgumentException();
+               
+                if (!int.TryParse(ReadClean(streamReader), out Count))
                     throw new ArgumentException();
                 for (var i = 0; i < 3; i++)
                 {
@@ -106,6 +126,23 @@ namespace Data_structure_XO
                 }
             }
         }
+
+        public override KeyValuePair<int, int>? PlayComputer()
+        {
+            var rnd = new Random();
+            var row = rnd.Next(0, 3);
+            var col = rnd.Next(0, 3);
+            while (Game[row, col] != Token.Empty)
+            {
+                row = rnd.Next(0, 3);
+                col = rnd.Next(0, 3);
+            }
+            if (InsertSymbol(row, col))
+                return new KeyValuePair<int, int>(row, col);
+            else return null;
+        }
+
+      
 
         protected override bool IsValidInsertion(int row, int column) 
         {

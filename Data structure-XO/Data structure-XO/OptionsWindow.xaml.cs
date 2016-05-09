@@ -13,21 +13,7 @@ namespace Data_structure_XO
             InitializeComponent();
         }
 
-        private void chooseMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ChooseMode.SelectedIndex == 1)
-            {
-                DifficultyLabel.Visibility = Visibility.Hidden;
-                ChooseDifficulty.Visibility = Visibility.Hidden;
-                Grid.SetRow(StartGame, 2);
-            }
-            else
-            {
-                DifficultyLabel.Visibility = Visibility.Visible;
-                ChooseDifficulty.Visibility = Visibility.Visible;
-                Grid.SetRow(StartGame, 3);
-            }
-        }
+        
 
         private void StartGame_Click(object sender, RoutedEventArgs e)
         {
@@ -35,21 +21,16 @@ namespace Data_structure_XO
             {
                 if (ChooseMode.SelectedIndex == 0)
                 {
-                    if (ChooseDifficulty.SelectedItem != null)
-                    {
-                        var gameWindow = new GameWindow(ChooseGame.SelectedIndex);
+                    
+                        var gameWindow = new GameWindow(ChooseGame.SelectedIndex,0);
                         gameWindow.Show();
                         Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("You must select all game options.", "Error",
-                           MessageBoxButton.OK, MessageBoxImage.Error);
-                    } 
+                    
+                   
                 }
                 else
                 {
-                    var gameWindow = new GameWindow(ChooseGame.SelectedIndex);
+                    var gameWindow = new GameWindow(ChooseGame.SelectedIndex,1);
                     gameWindow.Show();
                     Close();
                 }

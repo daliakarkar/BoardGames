@@ -25,7 +25,8 @@ namespace Data_structure_XO
             var userClickedOk = openFileDialog.ShowDialog();
             if (userClickedOk != true) return;
             var fs = (FileStream)openFileDialog.OpenFile();
-            var token = (char) fs.ReadByte();
+            var token = (char)fs.ReadByte();
+            var mode = fs.ReadByte();
             int type;
             switch (token)
             {
@@ -40,7 +41,7 @@ namespace Data_structure_XO
                 default:
                     throw new FileLoadException();
             }
-            var gameWindow = new GameWindow(fs, type);
+            var gameWindow = new GameWindow(fs, type, mode);
             gameWindow.Show();
             Close();
         }

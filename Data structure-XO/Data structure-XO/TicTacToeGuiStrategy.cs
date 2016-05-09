@@ -15,7 +15,7 @@ namespace Data_structure_XO
             var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;
             Image board = new Image {Source = srcImage};
             GameCanvas.Children.Add(board);
-            
+
             Canvas.SetZIndex(board, BoardZIndex);
             board.Height = GameCanvas.ActualHeight - 20;
             board.Width = board.Height + 20;
@@ -30,9 +30,10 @@ namespace Data_structure_XO
             gameBoard = board;
         }
 
-        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,bool ClearRedoStack = true)
+        public override void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
+            bool ClearRedoStack = true)
         {
-            base.InsertSymbol(row,column,token,ClearRedoStack);
+            base.InsertSymbol(row, column, token, ClearRedoStack);
             BitmapImage symbolImage;
             if (token == GameEngine.Token.Empty)
                 token = gameEngine.CurrentPlayer;
@@ -61,7 +62,6 @@ namespace Data_structure_XO
             Canvas.SetLeft(symbol, leftOffset);
         }
 
-        
 
         protected override void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -85,16 +85,26 @@ namespace Data_structure_XO
 
                 InsertSymbol(row, column);
                 CheckForWinning(row, column);
+
+                //If you play versus computer it's his time
+                if (Mode == 0 && !gameFinished)
+                {
+                    var coordinates = gameEngine.PlayComputer();
+                    if (coordinates != null)
+                    {
+                        InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
+                        CheckForWinning(coordinates.Value.Key, coordinates.Value.Value);
+                    }
+                }
+               
             }
         }
 
-        public TicTacToeGuiStrategy(GameWindow window) : base(window)
+        public TicTacToeGuiStrategy(GameWindow window, int mode) : base(window, mode)
         {
             gameEngine = new GameXO();
+            gameEngine.Mode = mode;
         }
-
-   
-
 
 
         protected override void DrawSymbolsFromGameEngine()
@@ -110,7 +120,8 @@ namespace Data_structure_XO
             }
         }
 
-        protected override double OriginalBoardWidth {
+        protected override double OriginalBoardWidth
+        {
             get
             {
                 var srcImage = gamesResourceDictionary["XO-Board"] as BitmapImage;

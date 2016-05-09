@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 
 namespace Data_structure_XO
 {
@@ -12,6 +13,7 @@ namespace Data_structure_XO
             Count = 0;
             UndoStack = new Stack<int>();
             RedoStack = new Stack<int>();
+            Mode = 1;
         }
 
         public enum Token { Empty, One, Two}
@@ -19,6 +21,7 @@ namespace Data_structure_XO
         public Token CurrentPlayer { get; set; }
         public Stack<int> UndoStack { get; set; }
         public Stack<int> RedoStack { get; set; }
+        public int Mode;
 
         public virtual bool IsGameWon(int row, int column)
         {
@@ -54,6 +57,12 @@ namespace Data_structure_XO
         {
             throw new NotImplementedException();
         }
+
+        public virtual KeyValuePair<int, int>? PlayComputer()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void ChangeTurn()
         {
