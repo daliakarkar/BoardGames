@@ -45,7 +45,10 @@ namespace Data_structure_XO
 
         public virtual void Restart()
         {
-            throw new NotImplementedException();
+            UndoStack.Clear();
+            RedoStack.Clear();
+            CurrentPlayer = Token.One;
+            Count = 0;
         }
 
         public virtual void SaveGame(FileStream fs)

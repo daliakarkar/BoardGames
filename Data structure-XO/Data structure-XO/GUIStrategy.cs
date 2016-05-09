@@ -208,9 +208,19 @@ namespace Data_structure_XO
         {
             if (gameFinished)
                 return;
-            gameEngine.Undo();
-            GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
-            ChangeTurn();
+            if (Mode == 0)
+            {
+                gameEngine.Undo();
+                GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
+                gameEngine.Undo();
+                GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
+            }
+            else
+            {
+                gameEngine.Undo();
+                GameCanvas.Children.RemoveAt(GameCanvas.Children.Count - 1);
+                ChangeTurn();
+            }
             //Enable Redo Menu
             Window.RedoItem.IsEnabled = true;
 
@@ -224,13 +234,39 @@ namespace Data_structure_XO
         {
             if (gameFinished)
                 return;
-            gameEngine.Redo();
-            var column = gameEngine.UndoStack.Pop();
-            var row = gameEngine.UndoStack.Peek();
 
-            gameEngine.UndoStack.Push(column);
-            InsertSymbol(row, column, clearRedoStack: false);
-            ChangeTurn();
+
+            if (Mode == 0)
+            {
+                gameEngine.Redo();
+                var column = gameEngine.UndoStack.Pop();
+                var row = gameEngine.UndoStack.Peek();
+
+                gameEngine.UndoStack.Push(column);
+                InsertSymbol(row, column, clearRedoStack: false);
+                ChangeTurn();
+
+                gameEngine.Redo();
+
+                 column = gameEngine.UndoStack.Pop();
+                row = gameEngine.UndoStack.Peek();
+
+                gameEngine.UndoStack.Push(column);
+                InsertSymbol(row, column, clearRedoStack: false);
+                ChangeTurn();
+
+            }
+            else
+            {
+                gameEngine.Redo();
+                var column = gameEngine.UndoStack.Pop();
+                var row = gameEngine.UndoStack.Peek();
+
+                gameEngine.UndoStack.Push(column);
+                InsertSymbol(row, column, clearRedoStack: false);
+                ChangeTurn();
+
+            }
         }
     }
 }

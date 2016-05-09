@@ -108,9 +108,10 @@ namespace Data_structure_XO
 
         public override void Restart()
         {
-            CurrentPlayer = Token.One;
+            base.Restart();
+            
             Game = new Token[6, 7];
-            Count = 0;
+
         }
 
         public override void SaveGame(FileStream fs)
