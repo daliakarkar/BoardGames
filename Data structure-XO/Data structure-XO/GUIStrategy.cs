@@ -75,8 +75,12 @@ namespace Data_structure_XO
         public void RestartGame()
         {
             gameFinished = false;
+            Window.RedoItem.IsEnabled = false;
+            Window.UndoItem.IsEnabled = false;
+
             gameEngine.Restart();
             GameCanvas.Children.Clear();
+            
             InitializeBoard();
         }
 

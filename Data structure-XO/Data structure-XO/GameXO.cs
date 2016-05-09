@@ -6,26 +6,28 @@ using System.Windows;
 
 namespace Data_structure_XO
 {
-   
     public class GameXO : GameEngine
     {
-        public GameXO() 
+        public GameXO()
         {
-            Game = new Token[3,3];
+            Game = new Token[3, 3];
         }
 
         public override bool IsGameWon(int row, int column)
         {
             int count;
             //check col
-            for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++) { }
+            for (count = 0; count < 3 && Game[count, column] == CurrentPlayer; count++)
+            {
+            }
             if (count == 3)
             {
-               
                 return true;
             }
             //check row
-            for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++){}
+            for (count = 0; count < 3 && Game[row, count] == CurrentPlayer; count++)
+            {
+            }
             if (count == 3)
             {
                 return true;
@@ -33,17 +35,20 @@ namespace Data_structure_XO
             //check diag
             if (row == column)
             {
-                for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++){}
+                for (count = 0; count < 3 && Game[count, count] == CurrentPlayer; count++)
+                {
+                }
                 if (count == 3)
                 {
-                   
                     return true;
                 }
             }
             //check anti diag 
-            for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++){}
+            for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++)
+            {
+            }
             if (count != 3) return false;
-       
+
             return true;
         }
 
@@ -81,9 +86,8 @@ namespace Data_structure_XO
 
         public override void Restart()
         {
-            CurrentPlayer = Token.One;
+            base.Restart();
             Game = new Token[3, 3];
-            Count = 0;
         }
 
         public override void SaveGame(FileStream fs)
@@ -114,7 +118,7 @@ namespace Data_structure_XO
                 CurrentPlayer = StringToToken(ReadClean(streamReader));
                 if (!int.TryParse(ReadClean(streamReader), out Mode))
                     throw new ArgumentException();
-               
+
                 if (!int.TryParse(ReadClean(streamReader), out Count))
                     throw new ArgumentException();
                 for (var i = 0; i < 3; i++)
@@ -142,17 +146,15 @@ namespace Data_structure_XO
             else return null;
         }
 
-      
 
-        protected override bool IsValidInsertion(int row, int column) 
+        protected override bool IsValidInsertion(int row, int column)
         {
             if (row > 2 || column > 2)
             {
-               
                 return false;
             }
             if (Game[row, column] == Token.Empty) return true;
-           
+
             return false;
         }
 
