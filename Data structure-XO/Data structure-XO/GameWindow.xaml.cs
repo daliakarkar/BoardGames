@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
 
@@ -187,7 +188,7 @@ namespace Data_structure_XO
             RedoItem.IsEnabled = _gameEngine.RedoStack.Count >= 2;
         }
 
-        private void CheckGame(int row, int col,int from) //from: 0 for Redo and 1 for Enter
+        private async void CheckGame(int row, int col,int from) //from: 0 for Redo and 1 for Enter
         {
             if (_gameEngine.IsGameWon(row, col) || _gameEngine.IsGameDraw())
             {
@@ -198,6 +199,7 @@ namespace Data_structure_XO
             {
                 _gameEngine.ChangeTurn();
                 UpdateBoard();
+                await Task.Delay(1000);
                 if (from != 1 || _mode != 0) return;
                 var result = _level == 0 ? _gameEngine.PlayLow() : _gameEngine.PlayHigh();
                 if (result)
