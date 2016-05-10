@@ -105,6 +105,7 @@ namespace Data_structure_XO.GuiStrategies
             Chip.Width = RedChip.Width*GetSizeRatio();
             Chip.Height = RedChip.Height*GetSizeRatio();
 
+            if(!GameCanvas.Children.Contains(Chip))
                 GameCanvas.Children.Add(Chip);
             var ChipLeftOffset = leftOffSet + (board.Width/NumOfColumns - Chip.Width)/2;
             Canvas.SetLeft(Chip, ChipLeftOffset);
