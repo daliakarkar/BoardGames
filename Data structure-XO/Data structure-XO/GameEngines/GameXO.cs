@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Data_structure_XO.GameEngines
 {
-    public class GameXO : GameEngines.GameEngine
+    public class GameXO : GameEngine
     {
         public GameXO()
         {
@@ -46,16 +46,12 @@ namespace Data_structure_XO.GameEngines
             for (count = 0; count < 3 && Game[count, 2 - count] == CurrentPlayer; count++)
             {
             }
-            if (count != 3) return false;
-
-            return true;
+            return count == 3;
         }
 
         public override bool IsGameDraw()
         {
-            if (Count == 9)
-                return true;
-            return false;
+            return Count == 9;
         }
 
         public override bool InsertSymbol(int row, int column)
@@ -142,7 +138,7 @@ namespace Data_structure_XO.GameEngines
             }
             if (InsertSymbol(row, col))
                 return new KeyValuePair<int, int>(row, col);
-            else return null;
+            return null;
         }
 
 
@@ -152,9 +148,7 @@ namespace Data_structure_XO.GameEngines
             {
                 return false;
             }
-            if (Game[row, column] == Token.Empty) return true;
-
-            return false;
+            return Game[row, column] == Token.Empty;
         }
 
         protected override Token StringToToken(string s)

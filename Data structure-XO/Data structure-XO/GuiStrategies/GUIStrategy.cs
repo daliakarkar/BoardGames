@@ -21,7 +21,7 @@ namespace Data_structure_XO.GuiStrategies
         protected ResourceDictionary GamesResourceDictionary;
 
 
-        public GuiStrategy(GameWindow window, int mode)
+        protected GuiStrategy(GameWindow window, int mode)
         {
             Window = window;
             GameCanvas = Window.GameCanvas;
@@ -45,7 +45,7 @@ namespace Data_structure_XO.GuiStrategies
         protected abstract double OriginalBoardWidth { get; }
 
         public abstract void InitializeBoard();
-        protected abstract BitmapImage getPlayerSymbol(GameEngine.Token t);
+        protected abstract BitmapImage GetPlayerSymbol(GameEngine.Token t);
 
         public void InsertSymbol(int row, int column, GameEngine.Token token = GameEngine.Token.Empty,
             bool clearRedoStack = true)
@@ -57,14 +57,14 @@ namespace Data_structure_XO.GuiStrategies
             Window.RedoItem.IsEnabled = GameEngine.RedoStack.Count >= 2;
             if (token == GameEngine.Token.Empty)
                 token = GameEngine.CurrentPlayer;
-            var symbolImage = getPlayerSymbol(token);
+            var symbolImage = GetPlayerSymbol(token);
             var symbol = new Image
             {
-                Source = symbolImage
+                Source = symbolImage,
+                Width = symbolImage.Width*GetSizeRatio(),
+                Height = symbolImage.Height*GetSizeRatio()
             };
 
-            symbol.Width = symbolImage.Width*GetSizeRatio();
-            symbol.Height = symbolImage.Height*GetSizeRatio();
             GameCanvas.Children.Add(symbol);
             Panel.SetZIndex(symbol, SymbolZIndex);
             var offset = CalculateSymbolOffset(row, column, symbol);
@@ -199,14 +199,31 @@ namespace Data_structure_XO.GuiStrategies
         {
             GameEngine.ChangeTurn();
             UpdateStatusBar();
+            if (Mode == 0 && GameEngine.CurrentPlayer == GameEngine.Token.Two)
+            {
+                GameCanvas.MouseLeftButtonUp -= GameCanvas_OnMouseLeftButtonUp;
+            }
+            else
+            {
+                GameCanvas.MouseLeftButtonUp += GameCanvas_OnMouseLeftButtonUp;
+            }
         }
 
         protected void UpdateStatusBar()
         {
-            if (GameEngine.CurrentPlayer == GameEngine.Token.One)
-                Window.Statusbar.Content = "Turn : Player 1";
-            else if (GameEngine.CurrentPlayer == GameEngine.Token.Two)
-                Window.Statusbar.Content = "Turn : Player 2";
+            switch (GameEngine.CurrentPlayer)
+            {
+                case GameEngine.Token.One:
+                    Window.Statusbar.Content = "Turn : Player 1";
+                    break;
+                case GameEngine.Token.Two:
+                    Window.Statusbar.Content = "Turn : Player 2";
+                    break;
+                case GameEngine.Token.Empty:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         protected double GetSizeRatio()
@@ -223,7 +240,6 @@ namespace Data_structure_XO.GuiStrategies
 
         protected void RedrawGame()
         {
-            //this is a bad solution if used in a heavy duty app
             GameCanvas.Children.Clear();
             InitializeBoard();
             GameBoard.UpdateLayout();

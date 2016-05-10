@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Data_structure_XO">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <BitmapImage x:Key="XO-Board" UriSource="XO-Board.png"></BitmapImage>
     <BitmapImage x:Key="XO-X-Mark" UriSource="XO-X Mark.png"></BitmapImage>
     <BitmapImage x:Key="XO-O-Mark" UriSource="XO- O Mark.png"></BitmapImage>   

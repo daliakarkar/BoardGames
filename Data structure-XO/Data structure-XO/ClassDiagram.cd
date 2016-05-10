@@ -1,42 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="Data_structure_XO.GameEngines.GameConnect4" Collapsed="true">
-    <Position X="1.5" Y="4.75" Width="1.5" />
+    <Position X="10.75" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAAAQAAAAgAAAAAQAAAAMiAMAIAAAAAAAAAE=</HashCode>
       <FileName>GameEngines\GameConnect4.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Data_structure_XO.GameEngines.GameEngine" Collapsed="true">
-    <Position X="2.75" Y="3.5" Width="1.5" />
+    <Position X="12" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAIAQBAAAgAAAAAQBAAgIigkAIQACgAAAAAE=</HashCode>
       <FileName>GameEngines\GameEngine.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Data_structure_XO.GameEngines.GameXO" Collapsed="true">
-    <Position X="3.75" Y="4.75" Width="1.5" />
+    <Position X="13" Y="4.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAAAAAAAAAQAAAAgAAAAAQAAAAIiAEAIAAAAAAAAAE=</HashCode>
       <FileName>GameEngines\GameXO.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Data_structure_XO.GuiStrategies.ConnectFourStrategy" Collapsed="true">
-    <Position X="3.75" Y="1.75" Width="1.5" />
+    <Position X="8.25" Y="4.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAgCAAAAkIAAAAAAAAAIACAAIkAAAgAAAAIAAE=</HashCode>
       <FileName>GuiStrategies\ConnectFourStrategy.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Data_structure_XO.GuiStrategies.GuiStrategy" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="1.5" />
+    <Position X="7.25" Y="3" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AgACAAAACIiRhkIAQAAAAQAhIASIAAkQAAAECIAAgAE=</HashCode>
       <FileName>GuiStrategies\GUIStrategy.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Data_structure_XO.GuiStrategies.TicTacToeGuiStrategy" Collapsed="true">
-    <Position X="1.5" Y="1.75" Width="1.5" />
+    <Position X="5.75" Y="4.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAACAAAAkIAAAAAAAAAIACAAAEAAAAAAAAAAAA=</HashCode>
       <FileName>GuiStrategies\TicTacToeGuiStrategy.cs</FileName>

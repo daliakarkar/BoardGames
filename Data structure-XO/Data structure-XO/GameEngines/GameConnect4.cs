@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Data_structure_XO.GameEngines
 {
-    public class GameConnect4 : GameEngines.GameEngine
+    public class GameConnect4 : GameEngine
     {
         private const int MaxRow = 6;
         private const int MaxCol = 7;
@@ -87,16 +87,12 @@ namespace Data_structure_XO.GameEngines
                 {
                 }
             }
-            if (count != 4) return false;
-
-            return true;
+            return count == 4;
         }
 
         public override bool IsGameDraw()
         {
-            if (Count == MaxRow*MaxCol)
-                return true;
-            return false;
+            return Count == MaxRow*MaxCol;
         }
 
         public override bool InsertSymbol(int row, int column)

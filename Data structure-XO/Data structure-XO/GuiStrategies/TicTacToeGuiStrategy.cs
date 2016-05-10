@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -24,7 +25,7 @@ namespace Data_structure_XO.GuiStrategies
             get
             {
                 var srcImage = GamesResourceDictionary["XO-Board"] as BitmapImage;
-                return srcImage.Width;
+                return srcImage?.Width ?? 0;
             }
         }
 
@@ -49,7 +50,7 @@ namespace Data_structure_XO.GuiStrategies
             GameBoard = board;
         }
 
-        protected override BitmapImage getPlayerSymbol(GameEngine.Token t)
+        protected override BitmapImage GetPlayerSymbol(GameEngine.Token t)
         {
             BitmapImage symbolImage;
 
@@ -76,40 +77,35 @@ namespace Data_structure_XO.GuiStrategies
         }
 
 
-        protected override void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        protected override async void GameCanvas_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             //If the user can't play,because the game is finished
             if (GameFinished)
                 return;
             var mousePoistion = e.GetPosition(GameBoard);
-            if (mousePoistion.X > 0 && mousePoistion.X < GameBoard.ActualWidth
-                && mousePoistion.Y > 0 && mousePoistion.Y < GameBoard.ActualHeight)
-            {
-                //Calculate row & column
-                var rowSize = GameBoard.ActualHeight/3.0;
-                var columnSize = GameBoard.ActualWidth/3.0;
-                var row = (int) (mousePoistion.Y/rowSize);
-                var column = (int) (mousePoistion.X/columnSize);
+            if (!(mousePoistion.X > 0) || !(mousePoistion.X < GameBoard.ActualWidth) || !(mousePoistion.Y > 0) ||
+                !(mousePoistion.Y < GameBoard.ActualHeight)) return;
+            //Calculate row & column
+            var rowSize = GameBoard.ActualHeight/3.0;
+            var columnSize = GameBoard.ActualWidth/3.0;
+            var row = (int) (mousePoistion.Y/rowSize);
+            var column = (int) (mousePoistion.X/columnSize);
 
 
-                var insert = GameEngine.InsertSymbol(row, column);
-                // If insertion fails don't continue
-                if (!insert) return;
+            var insert = GameEngine.InsertSymbol(row, column);
+            // If insertion fails don't continue
+            if (!insert) return;
 
-                InsertSymbol(row, column);
-                CheckForWinning(row, column);
+            InsertSymbol(row, column);
+            CheckForWinning(row, column);
 
-                //If you play versus computer it's his time
-                if (Mode == 0 && !GameFinished)
-                {
-                    var coordinates = GameEngine.PlayComputer();
-                    if (coordinates != null)
-                    {
-                        InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
-                        CheckForWinning(coordinates.Value.Key, coordinates.Value.Value);
-                    }
-                }
-            }
+            //If you play versus computer it's his time
+            if (Mode != 0 || GameFinished) return;
+            var coordinates = GameEngine.PlayComputer();
+            if (coordinates == null) return;
+            await Task.Delay(1000);
+            InsertSymbol(coordinates.Value.Key, coordinates.Value.Value);
+            CheckForWinning(coordinates.Value.Key, coordinates.Value.Value);
         }
     }
 }
