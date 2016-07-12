@@ -199,14 +199,9 @@ namespace Data_structure_XO.GuiStrategies
         {
             GameEngine.ChangeTurn();
             UpdateStatusBar();
-            if (Mode == 0 && GameEngine.CurrentPlayer == GameEngine.Token.Two)
-            {
-                GameCanvas.MouseLeftButtonUp -= GameCanvas_OnMouseLeftButtonUp;
-            }
-            else
-            {
-                GameCanvas.MouseLeftButtonUp += GameCanvas_OnMouseLeftButtonUp;
-            }
+            GameCanvas.MouseLeftButtonUp -= GameCanvas_OnMouseLeftButtonUp;
+            if (Mode == 0 && GameEngine.CurrentPlayer == GameEngine.Token.Two) return;
+            GameCanvas.MouseLeftButtonUp += GameCanvas_OnMouseLeftButtonUp;
         }
 
         protected void UpdateStatusBar()
